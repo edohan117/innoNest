@@ -8,9 +8,8 @@
                     <label for="title">아이디어의 핵심을 간단히 표현해주세요</label>
                 </div>
                 <div class="form-group">
-                    <textarea v-model="idea.description" id="description" rows="6" required
-                        placeholder="아이디어 설명"></textarea>
-                    <label for="description">당신의 혁신적인 아이디어를 자세히 설명해주세요</label>
+                    <textarea v-model="idea.content" id="content" rows="6" required placeholder="아이디어 설명"></textarea>
+                    <label for="content">당신의 혁신적인 아이디어를 자세히 설명해주세요</label>
                 </div>
                 <div class="form-group">
                     <div class="tag-input-container">
@@ -29,6 +28,15 @@
                         </button>
                     </span>
                 </div>
+                <div class="form-group">
+                    <label for="category">카테고리 선택</label>
+                    <select v-model="idea.category" id="category" required>
+                        <option disabled value="">카테고리를 선택해주세요</option>
+                        <option v-for="category in categorys" :key="category.ID" :value="category.NAME">
+                            {{ category.NAME }}
+                        </option>
+                    </select>
+                </div>
                 <button type="submit" class="btn-submit">
                     <span class="material-icons">send</span> 아이디어 제출하기
                 </button>
@@ -36,35 +44,65 @@
         </div>
     </div>
 </template>
-  
+
 <script>
+import { mapGetters } from 'vuex';
+import axios from 'axios';
+
 export default {
     data() {
         return {
             idea: {
                 title: '',
-                description: '',
-                tags: []
+                content: '',
+                tags: [],
+                category: '' // 카테고리 추가
             },
-            tagInput: ''
-        }
+            tagInput: '',
+            categorys: [] // Correctly named categorys to match template
+        };
+    },
+    computed: {
+        ...mapGetters(['user']) // Vuex에서 사용자 정보 가져오기
+    },
+    created() {
+        this.fetchCategory();
     },
     methods: {
         addTag() {
             if (this.tagInput.trim() && !this.idea.tags.includes(this.tagInput.trim())) {
-                this.idea.tags.push(this.tagInput.trim())
-                this.tagInput = ''
+                this.idea.tags.push(this.tagInput.trim());
+                this.tagInput = '';
             }
         },
         removeTag(index) {
-            this.idea.tags.splice(index, 1)
+            this.idea.tags.splice(index, 1);
         },
         submitIdea() {
-            console.log('제출된 아이디어:', this.idea)
-            this.idea = { title: '', description: '', tags: [] }
+            const tagsString = this.idea.tags.join(',');
+            const ideaData = { ...this.idea, tags: tagsString, userId: this.user.id }; // 사용자 ID 추가
+            console.log(ideaData);
+            axios.post('/api/idea/submit', ideaData)
+                .then(response => {
+                    console.log('아이디어 제출 성공:', response.data);
+                    this.idea = { title: '', content: '', tags: [], category: '' };
+                    this.$router.push('/ideaList');
+                })
+                .catch(error => {
+                    console.error('아이디어 제출 실패:', error);
+                });
+        },
+        fetchCategory() {
+            axios.get('/api/category/list')
+                .then(response => {
+                    this.categorys = response.data;
+                })
+                .catch(error => {
+                    console.error('카테고리 로드 실패:', error);
+                });
         }
     }
-}
+};
 </script>
   
 <style scoped>
@@ -109,7 +147,8 @@ h1 {
 }
 
 input[type="text"],
-textarea {
+textarea,
+select {
     width: 100%;
     padding: 1rem;
     border: 2px solid #e2e8f0;
@@ -120,7 +159,8 @@ textarea {
 }
 
 input[type="text"]:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
     outline: none;
     border-color: #3a86ff;
     box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.1);

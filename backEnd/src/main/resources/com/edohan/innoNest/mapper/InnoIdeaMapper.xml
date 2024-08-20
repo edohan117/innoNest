@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edohan.innoNest.mapper.InnoIdeaMapper">
+    <select id="innoIdeaList" resultType="java.util.Map">
+        SELECT 
+            A.ID                AS ID, 
+            A.TITLE             AS TITLE, 
+            A.CONTENT           AS CONTENT, 
+            A.WRITER            AS WRITER, 
+            A.TAGS              AS TAGS, 
+            A.LIKE_COUNT        AS LIKE_COUNT, 
+            A.UNLIKE_COUNT      AS UNLIKE_COUNT, 
+            A.WRITERDATE        AS WRITERDATE, 
+            A.UPDATEDATE        AS UPDATEDATE, 
+            A.VIEW_COUNT        AS VIEW_COUNT, 
+            A.CATEGORY          AS CATEGORY, 
+            A.STATUS            AS STATUS
+        FROM 
+            TB_IDEA A
+        ORDER BY 
+            A.WRITERDATE DESC
+    </select>
+    
+    <!-- 아이디어 세부 정보 조회 -->
+    <select id="getIdeaDetail" parameterType="int" resultType="map">
+        SELECT * FROM TB_IDEA
+        WHERE ID = #{id}
+    </select>
+
+    <!-- 아이디어 저장 -->
+    <insert id="saveIdea" parameterType="map">
+        INSERT INTO TB_IDEA 
+        (TITLE,
+        CONTENT,
+        WRITER,
+        TAGS,
+        CATEGORY,
+        WRITERDATE,
+        UPDATEDATE)
+        VALUES 
+        (#{title},
+        #{content},
+        #{userId},
+        #{tags},
+        #{category},
+        NOW(),
+        NOW())
+    </insert>
+
+    <!-- 아이디어 수정 -->
+    <update id="updateIdea" parameterType="map">
+        UPDATE TB_IDEA
+        SET TITLE = #{title}, CONTENT = #{content}, UPDATEDATE = NOW()
+        WHERE ID = #{id}
+    </update>
+    
+        <!-- 아이디어 삭제 -->
+    <delete id="deleteIdea" parameterType="int">
+        DELETE FROM TB_IDEA
+        WHERE ID = #{id}
+    </delete>
+
+</mapper>

@@ -1,224 +1,71 @@
 <template>
-  <div class="idea-submission-container">
-    <div class="idea-submission">
-      <h1>혁신적인 아이디어 제출</h1>
-      <form @submit.prevent="submitIdea">
-        <div class="form-group">
-          <input v-model="idea.title" id="title" type="text" required placeholder="아이디어 제목">
-          <label for="title">아이디어의 핵심을 간단히 표현해주세요</label>
-        </div>
-        <div class="form-group">
-          <textarea v-model="idea.description" id="description" rows="6" required placeholder="아이디어 설명"></textarea>
-          <label for="description">당신의 혁신적인 아이디어를 자세히 설명해주세요</label>
-        </div>
-        <div class="form-group">
-          <div class="tag-input-container">
-            <input v-model="tagInput" id="tags" type="text" @keyup.enter="addTag" placeholder="태그 입력">
-            <button @click.prevent="addTag" type="button" class="btn-add-tag">
-              <span class="material-icons">add</span>
-            </button>
-          </div>
-          <label for="tags">관련 키워드를 입력하고 엔터를 눌러주세요</label>
-        </div>
-        <div class="tags">
-          <span v-for="(tag, index) in idea.tags" :key="index" class="tag">
-            {{ tag }}
-            <button @click="removeTag(index)" type="button" class="remove-tag-btn">
-              <span class="material-icons">close</span>
-            </button>
-          </span>
-        </div>
-        <button type="submit" class="btn-submit">
-          <span class="material-icons">send</span> 아이디어 제출하기
-        </button>
-      </form>
-    </div>
+  <div class="home">
+    <main class="main-content">
+      <hero-section />
+      <featured-ideas :ideas="featuredIdeas" />
+      <idea-list-main :ideas="ideas" />
+      <trending-tags :tags="trendingTags" />
+    </main>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import HeroSection from '@/components/HeroSection.vue';
+import FeaturedIdeas from '@/components/FeaturedIdeasMain.vue';
+import IdeaListMain from '@/components/IdeaListMain.vue';
+import TrendingTags from '@/components/TrendingTagsMain.vue';
+
 export default {
+  name: 'Home',
+  components: {
+    HeroSection,
+    FeaturedIdeas,
+    IdeaListMain,
+    TrendingTags,
+  },
   data() {
     return {
-      idea: {
-        title: '',
-        description: '',
-        tags: []
-      },
-      tagInput: ''
+      featuredIdeas: [], // Featured ideas 데이터를 저장할 배열
+      ideas: [], // Idea list 데이터를 저장할 배열
+      trendingTags: [], // Trending tags 데이터를 저장할 배열
+    };
+  },
+  async mounted() {
+    try {
+      const response = await axios.get('/api/main/list'); // API 요청
+      const data = response.data; // 응답 데이터
+
+      // 응답 데이터에서 필요한 정보를 추출하여 Vue 인스턴스의 데이터에 할당합니다
+      this.featuredIdeas = data.featuredIdeas || [];
+      this.ideas = data.ideas || [];
+      this.trendingTags = data.trendingTags || [];
+      
+    } catch (error) {
+      console.error('데이터를 가져오는 중 오류가 발생했습니다:', error); // 에러 처리
     }
   },
-  methods: {
-    addTag() {
-      if (this.tagInput.trim() && !this.idea.tags.includes(this.tagInput.trim())) {
-        this.idea.tags.push(this.tagInput.trim())
-        this.tagInput = ''
-      }
-    },
-    removeTag(index) {
-      this.idea.tags.splice(index, 1)
-    },
-    submitIdea() {
-      console.log('제출된 아이디어:', this.idea)
-      this.idea = { title: '', description: '', tags: [] }
-    }
-  }
-}
+};
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-
-body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f0f4f8;
-  color: #2d3748;
-  line-height: 1.6;
-}
-
-.idea-submission-container {
+.home {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100vh; /* 세로 가운데 정렬을 위해 */
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 2rem;
+  background-color: white; /* 배경색이 필요하다면 추가 */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* 시각적으로 중앙에 놓이도록 그림자 추가 */
 }
 
-.idea-submission {
-  background-color: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  padding: 3rem;
-  width: 100%;
-  max-width: 700px;
-}
 
-h1 {
-  font-size: 2.5rem;
-  font-weight: 600;
-  margin-bottom: 2rem;
-  text-align: center;
-  color: #3a86ff;
-}
-
-.form-group {
-  margin-bottom: 2rem;
-  position: relative;
-}
-
-input[type="text"],
-textarea {
-  width: 100%;
-  padding: 1rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  background-color: #f8fafc;
-}
-
-input[type="text"]:focus,
-textarea:focus {
-  outline: none;
-  border-color: #3a86ff;
-  box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.1);
-}
-
-label {
-  position: absolute;
-  left: 1rem;
-  top: -0.5rem;
-  background-color: #ffffff;
-  padding: 0 0.5rem;
-  font-size: 0.875rem;
-  color: #718096;
-}
-
-.tag-input-container {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-add-tag {
-  background-color: #3a86ff;
-  color: #ffffff;
-  border: none;
-  border-radius: 10px;
-  padding: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-add-tag:hover {
-  background-color: #2563eb;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-}
-
-.tag {
-  background-color: #e2e8f0;
-  color: #4a5568;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  transition: all 0.3s ease;
-}
-
-.tag:hover {
-  background-color: #cbd5e0;
-}
-
-.remove-tag-btn {
-  background: none;
-  border: none;
-  color: #718096;
-  margin-left: 0.5rem;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-}
-
-.btn-submit {
-  width: 100%;
-  padding: 1rem;
-  background-color: #3a86ff;
-  color: #ffffff;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn-submit:hover {
-  background-color: #2563eb;
-}
-
-.material-icons {
-  font-size: 1.25rem;
-}
-
-@media (max-width: 768px) {
-  .idea-submission {
-    padding: 2rem;
-  }
-
-  h1 {
-    font-size: 2rem;
-  }
-}
 </style>

@@ -5,12 +5,13 @@
         <router-link to="/" class="logo-link">InnoNest</router-link>
       </div>
       <nav class="nav">
-        <router-link to="/" class="nav-link">홈</router-link>
-        <router-link to="/innoWrite" class="nav-link">아이디어</router-link>
-        <router-link to="/about" class="nav-link">소개</router-link>
+        <router-link to="/ideaList" class="nav-link">List</router-link>
+        <router-link to="/ideaSubmit" class="nav-link">Submit</router-link>
+        <router-link to="/noticeList" class="nav-link">Notice</router-link>
       </nav>
       <div class="auth">
-        <button v-if="!isLoggedIn" @click="login" class="btn btn-login">로그인</button>
+        <span v-if="isLoggedIn" class="sessionId">{{ user.id }} 님</span>
+        <button v-if="!isLoggedIn" @click="goToLogin" class="btn btn-login">로그인</button>
         <button v-else @click="logout" class="btn btn-logout">로그아웃</button>
       </div>
       <button class="menu-toggle" @click="toggleMenu" aria-label="메뉴 열기">
@@ -19,47 +20,69 @@
     </div>
     <div class="mobile-menu" :class="{ 'is-active': isMenuOpen }">
       <router-link to="/" class="mobile-nav-link" @click="closeMenu">홈</router-link>
-      <router-link to="/ideas" class="mobile-nav-link" @click="closeMenu">아이디어</router-link>
-      <router-link to="/about" class="mobile-nav-link" @click="closeMenu">소개</router-link>
-      <button v-if="!isLoggedIn" @click="login" class="btn btn-login">로그인</button>
+      <router-link to="/ideaSubmit" class="mobile-nav-link" @click="closeMenu">아이디어</router-link>
+      <router-link to="/noticeList" class="mobile-nav-link" @click="closeMenu">공지사항</router-link>
+      <span v-if="isLoggedIn" class="sessionId">{{ user.id }} 님</span>
+      <button v-if="!isLoggedIn" @click="goToLogin" class="btn btn-login">로그인</button>
       <button v-else @click="logout" class="btn btn-logout">로그아웃</button>
     </div>
   </header>
 </template>
 
 <script>
+import { computed, ref } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
 export default {
   name: 'Header',
-  data() {
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+
+    // Vuex 상태와 Getter
+    const isLoggedIn = computed(() => store.getters.isAuthenticated);
+    const user = computed(() => store.getters.user);
+
+    const goToLogin = () => {
+      router.push('/loginForm');
+    };
+
+    const logout = () => {
+      store.dispatch('logout');
+      router.push('/');
+    };
+
+    const isMenuOpen = ref(false);
+
+    const toggleMenu = () => {
+      isMenuOpen.value = !isMenuOpen.value;
+    };
+
+    const closeMenu = () => {
+      isMenuOpen.value = false;
+    };
+
     return {
-      isLoggedIn: false,
-      isMenuOpen: false
-    }
+      isLoggedIn,
+      user,
+      goToLogin,
+      logout,
+      isMenuOpen,
+      toggleMenu,
+      closeMenu,
+    };
   },
-  methods: {
-    login() {
-      this.isLoggedIn = true
-      this.closeMenu()
-    },
-    logout() {
-      this.isLoggedIn = false
-      this.closeMenu()
-    },
-    toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen
-    },
-    closeMenu() {
-      this.isMenuOpen = false
-    }
-  }
-}
+};
 </script>
+
+
 
 <style scoped>
 .header {
   background-color: #ffffff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
@@ -239,5 +262,16 @@ export default {
   .menu-toggle[aria-expanded="true"] .menu-icon::after {
     transform: translateY(-8px) rotate(-45deg);
   }
+}
+
+/* 오른쪽 여백 추가 */
+.auth {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* 로그인/로그아웃 버튼과 사용자 ID 사이의 간격 추가 */
+}
+
+.sessionId {
+  margin-right: 1rem; /* 오른쪽 여백 추가 */
 }
 </style>

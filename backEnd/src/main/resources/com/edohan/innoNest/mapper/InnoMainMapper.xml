@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edohan.innoNest.mapper.InnoMainMapper">
+    <select id="innoMainList" resultType="java.util.Map">
+        SELECT 
+            B.ID, 
+            B.TITLE, 
+            B.CONTENT, 
+            B.WRITER, 
+            B.LIKE_COUNT, 
+            B.UNLIKE_COUNT, 
+            B.WRITERDATE, 
+            B.UPDATEDATE, 
+            B.COMMENT_COUNT, 
+            B.VIEW_COUNT, 
+            B.CATEGORY, 
+            B.STATUS,
+            IFNULL(C.COUNT, 0) AS COMMENT_COUNT
+        FROM 
+            TB_BOARD B
+        LEFT JOIN 
+            (SELECT BOARD_ID, COUNT(*) AS COUNT 
+             FROM TB_COMMENT 
+             GROUP BY BOARD_ID) C 
+        ON 
+            B.ID = C.BOARD_ID
+        ORDER BY 
+            B.WRITERDATE DESC
+    </select>
+</mapper>

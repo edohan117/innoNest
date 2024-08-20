@@ -1,0 +1,41 @@
+package com.edohan.innoNest.controller;
+
+import java.util.Map;
+
+import jakarta.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import com.edohan.innoNest.service.MemberService;
+
+@RestController
+@RequestMapping("/api/member")
+public class MemberController {
+
+    @Autowired
+    private MemberService service;
+
+    @PostMapping("/register")
+    public Map<String, Object> register(@RequestBody Map<String, String> memberRequest) {
+        return service.register(memberRequest);
+    }
+
+    @PostMapping("/login")
+    public Map<String, Object> login(@RequestBody Map<String, String> loginRequest, HttpSession session) {
+        String id = loginRequest.get("id");
+        String password = loginRequest.get("password");
+
+        Map<String, Object> response = service.authenticate(id, password);
+
+        if ("success".equals(response.get("status"))) {
+            session.setAttribute("id", id);
+            session.setAttribute("username", response.get("username"));
+            session.setAttribute("role", response.get("role")); // 사용자 권한 저장
+
+            return response;
+        } else {
+            return response;
+        }
+    }
+}
