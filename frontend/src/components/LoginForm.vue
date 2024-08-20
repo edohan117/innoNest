@@ -28,13 +28,12 @@ export default {
             id: id.value,
             password: password.value,
           });
-
           if (response.data.status === 'success') {
             const user = {
               id: id.value,
               username: response.data.username,
             };
-            const role = response.data.role; // 역할도 포함
+            const role = response.data.role;
 
             // localStorage에 저장
             localStorage.setItem('id', id.value);
@@ -43,7 +42,7 @@ export default {
 
             // Vuex에 로그인 상태 저장
             store.dispatch('login', { user, role });
-            
+
             // 로그인 성공 시 홈 페이지로 이동
             router.push('/');
           } else {
@@ -64,7 +63,6 @@ export default {
 
     const handleEnter = (event) => {
       if (event.key === 'Enter') {
-        // 로그인 버튼을 클릭하는 대신 직접 login 메서드 호출
         login();
       }
     };

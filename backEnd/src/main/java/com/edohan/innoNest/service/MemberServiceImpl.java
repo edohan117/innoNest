@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.edohan.innoNest.mapper.MemberMapper;
 
@@ -14,8 +15,8 @@ public class MemberServiceImpl implements MemberService {
     private MemberMapper mapper;
 
     @Override
+    @Transactional
     public Map<String, Object> register(Map<String, String> memberRequest) {
-        // 전달받은 id를 그대로 사용
         String id = memberRequest.get("id");
         memberRequest.put("id", id); 
         mapper.insertMember(memberRequest);
@@ -23,13 +24,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public Map<String, Object> authenticate(String id, String password) {
         String storedPassword = mapper.getPasswordByUsername(id);
         if (password.equals(storedPassword)) {
             String username = mapper.getUsernameById(id);
-            String role = mapper.getRoleById(id); // 사용자 권한 조회
+            String role = mapper.getRoleById(id);
 
-            // 사용자 정보와 권한을 반환
             return Map.of(
                 "status", "success",
                 "username", username,
@@ -41,8 +42,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<Map<String, Object>> memberList(){
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> memberList() {
         return mapper.memberList();
-    };
-    
+    }
 }

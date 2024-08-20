@@ -6,7 +6,7 @@
       </div>
       <nav class="nav">
         <router-link to="/ideaList" class="nav-link">List</router-link>
-        <router-link to="/ideaSubmit" class="nav-link">Submit</router-link>
+        <a href="#" @click.prevent="checkLoginAndNavigate('/ideaSubmit')" class="nav-link">Submit</a>
         <router-link to="/noticeList" class="nav-link">Notice</router-link>
         <div v-if="canView">
           <router-link to="/memberList" class="nav-link">Member</router-link>
@@ -14,7 +14,6 @@
       </nav>
       <div class="auth">
         <router-link v-if="role === 'ADMIN'" to="/adminDashboard" class="nav-link">Admin</router-link>
-        <!-- user 객체가 존재하고, id가 존재할 때만 표시 -->
         <span v-if="isLoggedIn && user && user.id" class="sessionId">{{ user.username }} 님</span>
         <button v-if="!isLoggedIn" @click="goToLogin" class="btn btn-login">로그인</button>
         <button v-else @click="logout" class="btn btn-logout">로그아웃</button>
@@ -25,9 +24,8 @@
     </div>
     <div class="mobile-menu" :class="{ 'is-active': isMenuOpen }">
       <router-link to="/" class="mobile-nav-link" @click="closeMenu">홈</router-link>
-      <router-link to="/ideaSubmit" class="mobile-nav-link" @click="closeMenu">아이디어</router-link>
+      <a href="#" @click.prevent="checkLoginAndNavigate('/ideaSubmit')" class="mobile-nav-link">아이디어 제출</a>
       <router-link to="/noticeList" class="mobile-nav-link" @click="closeMenu">공지사항</router-link>
-      <!-- user 객체가 존재하고, id가 존재할 때만 표시 -->
       <span v-if="isLoggedIn && user && user.id" class="sessionId">{{ user.username }} 님</span>
       <button v-if="!isLoggedIn" @click="goToLogin" class="btn btn-login">로그인</button>
       <button v-else @click="logout" class="btn btn-logout">로그아웃</button>
@@ -49,17 +47,16 @@ export default {
     // Vuex 상태와 Getter
     const isLoggedIn = computed(() => store.getters.isAuthenticated);
     const user = computed(() => store.getters.user);
-    const role = computed(() => store.getters.role);  // role 값 가져오기
+    const role = computed(() => store.getters.role);
 
     const goToLogin = () => {
       router.push('/loginForm');
     };
 
     const logout = async () => {
-      await store.dispatch('logout');  // 로그아웃 후 상태가 제대로 반영되도록 기다리기
-      router.push('/');  // 로그아웃 후 홈으로 리디렉션
+      await store.dispatch('logout');
+      router.push('/');
     };
-
 
     const isMenuOpen = ref(false);
 
@@ -71,6 +68,14 @@ export default {
       isMenuOpen.value = false;
     };
 
+    const checkLoginAndNavigate = (path) => {
+      if (!isLoggedIn.value) {
+        router.push('/loginForm');
+      } else {
+        router.push(path);
+      }
+    };
+
     return {
       isLoggedIn,
       user,
@@ -80,6 +85,7 @@ export default {
       isMenuOpen,
       toggleMenu,
       closeMenu,
+      checkLoginAndNavigate,
     };
   },
   computed: {
@@ -89,7 +95,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .header {
@@ -277,14 +282,13 @@ export default {
   }
 }
 
-/* 오른쪽 여백 추가 */
 .auth {
   display: flex;
   align-items: center;
-  gap: 1rem; /* 로그인/로그아웃 버튼과 사용자 ID 사이의 간격 추가 */
+  gap: 1rem;
 }
 
 .sessionId {
-  margin-right: 1rem; /* 오른쪽 여백 추가 */
+  margin-right: 1rem;
 }
 </style>

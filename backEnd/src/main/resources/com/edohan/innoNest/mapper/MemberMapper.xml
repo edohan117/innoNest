@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.edohan.innoNest.mapper.MemberMapper">
 
-    
     <!-- Member list -->
     <select id="memberList" resultType="java.util.Map">
         SELECT ID,
@@ -18,8 +17,25 @@
     
     <!-- 회원 등록 -->
     <insert id="insertMember" parameterType="java.util.Map">
-        INSERT INTO TB_MEMBER (ID, USERNAME, PASSWORD, EMAIL, PHONE, ROLE, CREATED_AT, UPDATED_AT)
-        VALUES (#{id}, #{username}, #{password}, #{email}, #{phone}, 'USER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        INSERT INTO 
+        TB_MEMBER 
+            (ID,
+            USERNAME,
+            PASSWORD,
+            EMAIL,
+            PHONE,
+            ROLE,
+            CREATEDATE,
+            UPDATEDATE)
+        VALUES 
+            (#{id},
+            #{username},
+            #{password},
+            #{email},
+            #{phone},
+            'USER',
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP)
     </insert>
 
     <!-- 사용자 비밀번호 조회 -->
