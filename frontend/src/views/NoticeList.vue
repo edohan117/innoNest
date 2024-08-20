@@ -1,14 +1,11 @@
 <template>
   <section class="notice-list">
     <h2>Notice Showcase</h2>
-    
-    <!-- 공지 등록 버튼 추가 -->
-    <div class="create-notice-container">
-      <router-link to="noticeCreate" class="btn-create-notice">
-        <i class="fas fa-plus"></i> 공지 등록
-      </router-link>
+    <div v-if="canEditOrDelete">
+      <div class="create-notice-container">
+        <router-link to="noticeCreate" class="btn-create-notice">공지 등록</router-link>
+      </div>
     </div>
-    
     <div class="notice-grid">
       <router-link 
         v-for="notice in paginatedNotices" 
@@ -50,6 +47,8 @@
 
 <script>
 import axios from 'axios';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'NoticeList',
@@ -75,10 +74,23 @@ export default {
         pages.push(i);
       }
       return pages;
+    },
+    canEditOrDelete() {
+      return this.role === 'ADMIN';
     }
   },
   created() {
     this.fetchNoticeList();
+  },
+  setup() {
+    const store = useStore();
+    const user = computed(() => store.getters.user);
+    const role = computed(() => store.getters.role);
+
+    return {
+      user,
+      role,
+    };
   },
   methods: {
     fetchNoticeList() {

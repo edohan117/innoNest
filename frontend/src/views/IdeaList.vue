@@ -17,8 +17,9 @@
               <span>{{ idea.WRITER }}</span>
             </div>
             <div class="idea-stats">
-              <span><i class="fas fa-thumbs-up"></i> {{ idea.LIKE_COUNT }}</span>
-              <span><i class="fas fa-thumbs-down"></i> {{ idea.UNLIKE_COUNT }}</span>
+              <span><i class="fas fa-thumbs-up"></i>LIKES {{ idea.LIKE_COUNT }}</span>
+              <span><i class="fas fa-thumbs-down"></i>UNLIKES {{ idea.UNLIKE_COUNT }}</span>
+              <span>VIEW {{ idea.VIEW_COUNT }}</span>
             </div>
             <div class="idea-date">
               <i class="fas fa-calendar-alt"></i>

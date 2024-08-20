@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,10 +27,18 @@ public class InnoIdeaController {
         return service.innoIdeaList();
     }
 
-        // 아이디어 세부 정보 조회
     @GetMapping("/detail/{id}")
-    public Map<String, Object> getIdeaDetail(@PathVariable int id) {
-        return service.getIdeaDetail(id);
+    public Map<String, Object> getIdeaDetail(@PathVariable int id, @RequestHeader(value = "User-Id", required = false) String userId) {
+        Map<String, Object> ideaDetail = service.getIdeaDetail(id);
+    
+        // Increase view count if necessary
+        if (userId != null && !userId.equals(ideaDetail.get("WRITER"))) {
+            service.incViewCount(id);
+
+            ideaDetail = service.getIdeaDetail(id);
+        }
+    
+        return ideaDetail;
     }
 
     // 아이디어 제출

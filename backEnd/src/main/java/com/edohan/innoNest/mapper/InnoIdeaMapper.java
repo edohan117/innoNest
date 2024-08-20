@@ -9,4 +9,5 @@ public interface InnoIdeaMapper {
     void saveIdea(String userId, String title, String content, String tags, String category);
     void updateIdea(int id, String title, String content);
     void deleteIdea(int id);
+    void incViewCount(int id);
 }

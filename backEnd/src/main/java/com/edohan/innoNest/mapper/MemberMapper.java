@@ -1,6 +1,6 @@
 package com.edohan.innoNest.mapper;
 
-import java.util.Map;
+import java.util.*;
 
 public interface MemberMapper {
 
@@ -11,4 +11,6 @@ public interface MemberMapper {
     String getUsernameById(String id);
 
     String getRoleById(String id);
+
+    List<Map<String, Object>> memberList();
 }

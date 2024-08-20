@@ -1,6 +1,6 @@
 package com.edohan.innoNest.controller;
 
-import java.util.Map;
+import java.util.*;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -12,10 +12,15 @@ import com.edohan.innoNest.service.MemberService;
 @RestController
 @RequestMapping("/api/member")
 public class MemberController {
-
+    
     @Autowired
     private MemberService service;
-
+    
+    @GetMapping("/list")
+    public List<Map<String, Object>> memberList(){
+        return service.memberList();
+    }
+    
     @PostMapping("/register")
     public Map<String, Object> register(@RequestBody Map<String, String> memberRequest) {
         return service.register(memberRequest);
@@ -38,4 +43,5 @@ public class MemberController {
             return response;
         }
     }
+
 }

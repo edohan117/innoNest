@@ -60,4 +60,10 @@
         WHERE ID = #{id}
     </delete>
 
+        <!-- 아이디어 조회수 증가 -->
+    <update id="incViewCount" parameterType="int">
+        UPDATE TB_IDEA
+        SET VIEW_COUNT = VIEW_COUNT + 1
+        WHERE ID = #{id}
+    </update>
 </mapper>

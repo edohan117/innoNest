@@ -14,9 +14,9 @@ public class InnoIdeaServiceImpl implements InnoIdeaSerive {
     private InnoIdeaMapper mapper;
     
     @Override
-    public List<Map<String, Object>> innoIdeaList(){
+    public List<Map<String, Object>> innoIdeaList() {
         return mapper.innoIdeaList();
-    };
+    }
 
     @Override
     public Map<String, Object> getIdeaDetail(int id) {
@@ -29,12 +29,17 @@ public class InnoIdeaServiceImpl implements InnoIdeaSerive {
     }
     
     @Override
-    public void updateIdea(int id, String title, String content){
+    public void updateIdea(int id, String title, String content) {
         mapper.updateIdea(id, title, content);
     }
     
     @Override
-    public void deleteIdea(int id){
+    public void deleteIdea(int id) {
         mapper.deleteIdea(id);
+    }
+    
+    @Override
+    public void incViewCount(int id) {
+        mapper.incViewCount(id);
     }
 }

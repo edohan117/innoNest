@@ -2,8 +2,8 @@
   <div class="login-form">
     <h2>Login</h2>
     <input v-model="id" type="text" placeholder="Id" />
-    <input v-model="password" type="password" placeholder="Password" />
-    <button @click="login">Login</button>
+    <input v-model="password" type="password" placeholder="Password" @keydown.enter="handleEnter" />
+    <button ref="loginButton" @click="login">Login</button>
     <button @click="goToRegister" class="sign-up-button">Sign Up</button>
   </div>
 </template>
@@ -62,11 +62,19 @@ export default {
       router.push('/register');
     };
 
+    const handleEnter = (event) => {
+      if (event.key === 'Enter') {
+        // 로그인 버튼을 클릭하는 대신 직접 login 메서드 호출
+        login();
+      }
+    };
+
     return {
       id,
       password,
       login,
       goToRegister,
+      handleEnter,
     };
   },
 };

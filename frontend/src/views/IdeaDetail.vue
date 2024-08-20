@@ -1,54 +1,79 @@
 <template>
   <section class="idea-detail">
-    <h2>{{ idea.TITLE }}
-      <div class="button-group">
-        <router-link to="/ideaList" class="golist-btn">목록</router-link>
-        <button class="modify-btn" @click="goToEditPage">수정</button>
-        <button class="delete-btn" @click="deleteIdea">삭제</button>
+    <div class="content-container">
+      <h2>{{ idea.TITLE }}</h2>
+      <div class="meta-info">
+        <div class="author-info">
+          <i class="fas fa-user-circle"></i>
+          <span>{{ idea.WRITER }}</span>
+        </div>
+        <div class="date-info">
+          <i class="fas fa-calendar-alt"></i>
+          <span>{{ formatDate(idea.WRITERDATE) }}</span>
+        </div>
       </div>
-    </h2>
-    <p class="idea-content">{{ idea.CONTENT }}</p>
-    <div class="idea-meta">
-      <div class="idea-author">
-        <i class="fas fa-user"></i>
-        <span>{{ idea.WRITER }}</span>
+      <div class="idea-content">
+        <p>{{ idea.CONTENT }}</p>
       </div>
-      <div class="idea-stats">
-        <span><i class="fas fa-thumbs-up"></i> {{ idea.LIKE_COUNT }}</span>
-        <span><i class="fas fa-thumbs-down"></i> {{ idea.UNLIKE_COUNT }}</span>
-        <span><i class="fas fa-comment"></i> {{ idea.COMMENT_COUNT }}</span>
-      </div>
-      <div class="idea-date">
-        <i class="fas fa-calendar-alt"></i>
-        <span>{{ formatDate(idea.WRITERDATE) }}</span>
+      <div class="interaction-stats">
+        <div class="stat-item">
+          <i class="fas fa-thumbs-up"></i>
+          <span>LIKES {{ idea.LIKE_COUNT }}</span>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-thumbs-down"></i>
+          <span>UNLIKES {{ idea.UNLIKE_COUNT }}</span>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-thumbs-down"></i>
+          <span>VIEW {{ idea.VIEW_COUNT }}</span>
+        </div>
       </div>
     </div>
-
-
+    <div class="action-buttons">
+      <router-link to="/ideaList" class="btn btn-secondary">목록</router-link>
+      <div v-if="canEditOrDelete" class="edit-delete-buttons">
+        <button class="btn btn-primary" @click="goToEditPage">수정</button>
+        <button class="btn btn-danger" @click="deleteIdea">삭제</button>
+      </div>
+    </div>
   </section>
 </template>
 
 <script>
 import axios from 'axios';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'IdeaDetail',
   data() {
     return {
-      idea: {},
-      comments: [],
-      newComment: '',
-      replyForm: {},
-      replyText: {}
+      idea: {}
     };
   },
   created() {
     this.fetchIdeaDetail();
   },
+  setup() {
+    const store = useStore();
+    const user = computed(() => store.getters.user);
+    const role = computed(() => store.getters.role);
+
+    return {
+      user,
+      role,
+    };
+  },
   methods: {
     fetchIdeaDetail() {
       const ideaId = this.$route.params.id;
-      axios.get(`/api/idea/detail/${ideaId}`)
+      const userId = this.user?.id; // Vuex에서 가져온 사용자 ID
+      axios.get(`/api/idea/detail/${ideaId}`,{
+        headers: {
+          'User-Id': userId // 사용자 ID를 헤더에 추가
+        }
+      })
         .then(response => {
           this.idea = response.data;
         })
@@ -76,6 +101,16 @@ export default {
           });
       }
     }
+  },
+  computed: {
+    canEditOrDelete() {
+      // user와 role이 유효한지 확인
+      if (!this.user || !this.user.id || !this.role) {
+        return false;
+      }
+      // writer와 로그인한 사용자의 id가 같거나, role이 ADMIN일 경우에만 true 반환
+      return this.idea.WRITER === this.user.id || this.role === 'ADMIN';
+    }
   }
 };
 </script>
@@ -83,81 +118,136 @@ export default {
 <style scoped>
 .idea-detail {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 2rem auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.content-container {
   padding: 2rem;
 }
 
 h2 {
-  font-size: 2rem;
-  color: #333;
+  font-size: 2.2rem;
+  color: #2c3e50;
   margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.meta-info {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.author-info, .date-info {
+  display: flex;
   align-items: center;
 }
 
-.button-group {
-  display: flex;
-  gap: 0.5rem; /* 버튼 사이의 간격 */
-}
-
-.modify-btn, .delete-btn {
-  border: none;
-  border-radius: 4px;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-.modify-btn {
-  background-color: #2c3e50;
-  color: #ecf0f1;
-}
-
-.modify-btn:hover {
-  background-color: #34495e;
-  transform: scale(1.05);
-}
-
-.delete-btn {
-  background-color: #e74c3c; /* 붉은색 */
-  color: #fff;
-}
-
-.delete-btn:hover {
-  background-color: #c0392b; /* 더 어두운 붉은색 */
-  transform: scale(1.05);
+.author-info i, .date-info i {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
 }
 
 .idea-content {
   font-size: 1.1rem;
   color: #34495e;
-  margin-bottom: 1rem;
-}
-
-.idea-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  color: #7f8c8d;
+  line-height: 1.6;
   margin-bottom: 2rem;
 }
 
-.golist-btn {
-  display: inline-block;
-  background-color: #3498db;
-  color: #fff;
-  padding: 0.25rem 0.5rem;
-  text-decoration: none;
-  border-radius: 3px;
-  font-size: 1rem;
-  transition: background-color 0.3s;
+.interaction-stats {
+  display: flex;
+  justify-content: flex-start;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
 }
 
-.golist-btn:hover {
-  background-color: #34495e;
-  transform: scale(1.05);
+.stat-item {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #7f8c8d;
+}
+
+.stat-item i {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: #ffffff;
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.edit-delete-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .idea-detail {
+    margin: 1rem;
+  }
+
+  .content-container {
+    padding: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  .interaction-stats {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .btn {
+    width: 100%;
+  }
 }
 </style>

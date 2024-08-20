@@ -1,7 +1,6 @@
 package com.edohan.innoNest.service;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,5 +39,10 @@ public class MemberServiceImpl implements MemberService {
             return Map.of("status", "failure", "message", "Invalid credentials");
         }
     }
+
+    @Override
+    public List<Map<String, Object>> memberList(){
+        return mapper.memberList();
+    };
     
 }

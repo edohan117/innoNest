@@ -22,12 +22,13 @@
         ></textarea>
       </div>
       <div class="form-actions">
-        <button type="submit">수정 완료</button>
-        <button type="button" @click="cancelEdit">취소</button>
+        <button type="submit" class="btn-submit">수정 완료</button>
+        <button type="button" @click="cancelEdit" class="btn-cancel">취소</button>
       </div>
     </form>
   </section>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -53,7 +54,7 @@ export default {
           this.notice = response.data;
         })
         .catch(error => {
-          console.error('아이디어 세부 사항을 가져오는 중 오류 발생:', error);
+          console.error('공지사항 세부 사항을 가져오는 중 오류 발생:', error);
         });
     },
     updateNotice() {
@@ -63,19 +64,19 @@ export default {
           this.$router.push({ name: 'NoticeDetail', params: { id: noticeId } });
         })
         .catch(error => {
-          console.error('아이디어 업데이트 중 오류 발생:', error);
+          console.error('공지사항 업데이트 중 오류 발생:', error);
         });
     },
     cancelEdit() {
       const noticeId = this.$route.params.id;
-      this.$router.push({ name: 'noticeDetail', params: { id: noticeId } });
+      this.$router.push({ name: 'NoticeDetail', params: { id: noticeId } });
     }
   }
 };
 </script>
 
+
 <style scoped>
-/* 스타일링 */
 .notice-edit {
   max-width: 800px;
   margin: 0 auto;
@@ -86,10 +87,11 @@ h2 {
   font-size: 2rem;
   color: #333;
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 label {
@@ -115,28 +117,34 @@ textarea {
 .form-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 1rem;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 button {
-  background-color: #3498db;
-  color: #fff;
   border: none;
   border-radius: 4px;
   padding: 0.5rem 1rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-button:hover {
+.btn-submit {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.btn-submit:hover {
   background-color: #2980b9;
 }
 
-button[type="button"] {
+.btn-cancel {
   background-color: #e74c3c;
+  color: #fff;
 }
 
-button[type="button"]:hover {
+.btn-cancel:hover {
   background-color: #c0392b;
 }
 </style>
