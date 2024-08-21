@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from '../src/script/router';
 import store from '@/store';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 function parseJSON(value) {
   try {

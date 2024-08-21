@@ -17,7 +17,7 @@ public class MemberController {
     private MemberService service;
     
     @GetMapping("/list")
-    public List<Map<String, Object>> memberList(){
+    public List<Map<String, Object>> memberList() {
         return service.memberList();
     }
     
@@ -30,18 +30,15 @@ public class MemberController {
     public Map<String, Object> login(@RequestBody Map<String, String> loginRequest, HttpSession session) {
         String id = loginRequest.get("id");
         String password = loginRequest.get("password");
-
         Map<String, Object> response = service.authenticate(id, password);
+        System.out.println("##############################  response :  "+ response);
 
         if ("success".equals(response.get("status"))) {
             session.setAttribute("id", id);
             session.setAttribute("username", response.get("username"));
             session.setAttribute("role", response.get("role")); // 사용자 권한 저장
-
-            return response;
-        } else {
-            return response;
         }
-    }
 
+        return response;
+    }
 }

@@ -31,7 +31,6 @@ public class InnoIdeaController {
     public Map<String, Object> getIdeaDetail(@PathVariable int id, @RequestHeader(value = "User-Id", required = false) String userId) {
         Map<String, Object> ideaDetail = service.getIdeaDetail(id);
     
-        // Increase view count if necessary
         if (userId != null && !userId.equals(ideaDetail.get("WRITER"))) {
             service.incViewCount(id);
 

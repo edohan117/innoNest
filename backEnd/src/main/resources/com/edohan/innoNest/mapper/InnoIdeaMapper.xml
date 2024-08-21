@@ -17,6 +17,7 @@
             A.STATUS            AS STATUS
         FROM 
             TB_IDEA A
+        WHERE A.STATUS = 'ACTIVE'
         ORDER BY 
             A.WRITERDATE DESC
     </select>

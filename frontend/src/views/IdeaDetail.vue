@@ -17,17 +17,20 @@
       </div>
       <div class="interaction-stats">
         <div class="stat-item">
-          <i class="fas fa-thumbs-up"></i>
           <span>LIKES {{ idea.LIKE_COUNT }}</span>
+          <i class="bi bi-hand-thumbs-up"></i>
         </div>
         <div class="stat-item">
-          <i class="fas fa-thumbs-down"></i>
           <span>UNLIKES {{ idea.UNLIKE_COUNT }}</span>
+          <i class="bi bi-hand-thumbs-down"></i>
         </div>
         <div class="stat-item">
-          <i class="fas fa-thumbs-down"></i>
+          <i class="fas fa-eye"></i>
           <span>VIEW {{ idea.VIEW_COUNT }}</span>
         </div>
+      </div>
+      <div class="idea-tags">
+        <span v-for="tag in parseTags(idea.TAGS)" :key="tag" class="tag">{{ tag }}</span>
       </div>
     </div>
     <div class="action-buttons">
@@ -39,6 +42,7 @@
     </div>
   </section>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -69,7 +73,7 @@ export default {
     fetchIdeaDetail() {
       const ideaId = this.$route.params.id;
       const userId = this.user?.id; // Vuex에서 가져온 사용자 ID
-      axios.get(`/api/idea/detail/${ideaId}`,{
+      axios.get(`/api/idea/detail/${ideaId}`, {
         headers: {
           'User-Id': userId // 사용자 ID를 헤더에 추가
         }
@@ -100,6 +104,9 @@ export default {
             console.error('아이디어를 삭제하는 중 오류 발생:', error);
           });
       }
+    },
+    parseTags(tagsString) {
+      return tagsString ? tagsString.split(',').map(tag => tag.trim()) : [];
     }
   },
   computed: {
@@ -114,6 +121,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 .idea-detail {
@@ -144,12 +152,14 @@ h2 {
   color: #7f8c8d;
 }
 
-.author-info, .date-info {
+.author-info,
+.date-info {
   display: flex;
   align-items: center;
 }
 
-.author-info i, .date-info i {
+.author-info i,
+.date-info i {
   margin-right: 0.5rem;
   font-size: 1.2rem;
 }
@@ -178,6 +188,26 @@ h2 {
 .stat-item i {
   margin-right: 0.5rem;
   font-size: 1.2rem;
+}
+
+.idea-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tag {
+  background-color: #3498db;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.tag:hover {
+  background-color: #2980b9;
 }
 
 .action-buttons {
