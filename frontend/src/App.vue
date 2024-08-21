@@ -34,8 +34,4 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
-
-.main-content {
-  flex: 1 0 auto;
-}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <header class="header">
+  <header :class="['header', { 'scrolled': isScrolled }]">
     <div class="container">
       <div class="logo">
         <router-link to="/" class="logo-link">InnoNest</router-link>
@@ -14,27 +14,32 @@
       </nav>
       <div class="auth">
         <router-link v-if="role === 'ADMIN'" to="/adminDashboard" class="nav-link">Admin</router-link>
-        <span v-if="isLoggedIn && user && user.id" class="sessionId">{{ user.username }} 님</span>
-        <button v-if="!isLoggedIn" @click="goToLogin" class="btn btn-login">로그인</button>
-        <button v-else @click="logout" class="btn btn-logout">로그아웃</button>
+        <div v-if="isLoggedIn && user && user.id" class="user-profile" @click="toggleProfileMenu">
+          <span class="sessionId">{{ user.username }} 님</span>
+          <div v-if="profileMenuOpen" class="profile-menu">
+            <router-link to="/profile" @click="closeMenu" class="profile-menu-link">Profile</router-link>
+            <router-link to="/settings" @click="closeMenu" class="profile-menu-link">Settings</router-link>
+            <button @click="logout" class="profile-menu-link">Logout</button>
+          </div>
+        </div>
+        <button v-if="!isLoggedIn" @click="goToLogin" class="btn btn-login">Login</button>
+        <!-- Remove the second @click from the Logout button -->
+        <button v-else @click="logoutAndCloseMenu" class="btn btn-logout">Logout</button>
       </div>
-      <button class="menu-toggle" @click="toggleMenu" aria-label="메뉴 열기" :aria-expanded="isMenuOpen">
+      <button class="menu-toggle" @click="toggleMenu" aria-label="Toggle menu" :aria-expanded="isMenuOpen">
         <span class="menu-icon"></span>
       </button>
     </div>
     <div class="mobile-menu" :class="{ 'is-active': isMenuOpen }">
-      <router-link to="/" class="mobile-nav-link" @click="closeMenu">홈</router-link>
-      <a href="#" @click.prevent="checkLoginAndNavigate('/ideaSubmit')" class="mobile-nav-link">아이디어 제출</a>
-      <router-link to="/noticeList" class="mobile-nav-link" @click="closeMenu">공지사항</router-link>
-      <span v-if="isLoggedIn && user && user.id" class="sessionId">{{ user.username }} 님</span>
-      <button v-if="!isLoggedIn" @click="goToLogin" class="btn btn-login">로그인</button>
-      <button v-else @click="logout" class="btn btn-logout">로그아웃</button>
+      <router-link to="/ideaList" class="mobile-nav-link" @click="closeMenu">List</router-link>
+      <a href="#" @click.prevent="checkLoginAndNavigate('/ideaSubmit')" class="mobile-nav-link">Submit</a>
+      <router-link to="/noticeList" class="mobile-nav-link" @click="closeMenu">Notice</router-link>
     </div>
   </header>
 </template>
 
 <script>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
@@ -44,13 +49,21 @@ export default {
     const store = useStore();
     const router = useRouter();
 
-    // Vuex 상태와 Getter
     const isLoggedIn = computed(() => store.getters.isAuthenticated);
     const user = computed(() => store.getters.user);
     const role = computed(() => store.getters.role);
 
+    const isMenuOpen = ref(false);
+    const profileMenuOpen = ref(false);
+    const isScrolled = ref(false);
+
     const goToLogin = () => {
       router.push('/loginForm');
+    };
+
+    const goToLoginMobile = () => {
+      router.push('/loginForm');
+      closeMenu();
     };
 
     const logout = async () => {
@@ -58,7 +71,10 @@ export default {
       router.push('/');
     };
 
-    const isMenuOpen = ref(false);
+    const logoutAndCloseMenu = async () => {
+      await logout();
+      closeMenu();
+    };
 
     const toggleMenu = () => {
       isMenuOpen.value = !isMenuOpen.value;
@@ -66,6 +82,11 @@ export default {
 
     const closeMenu = () => {
       isMenuOpen.value = false;
+      profileMenuOpen.value = false;
+    };
+
+    const toggleProfileMenu = () => {
+      profileMenuOpen.value = !profileMenuOpen.value;
     };
 
     const checkLoginAndNavigate = (path) => {
@@ -76,16 +97,32 @@ export default {
       }
     };
 
+    const handleScroll = () => {
+      isScrolled.value = window.scrollY > 50;
+    };
+
+    onMounted(() => {
+      window.addEventListener('scroll', handleScroll);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener('scroll', handleScroll);
+    });
+
     return {
       isLoggedIn,
       user,
       role,
       goToLogin,
-      logout,
+      goToLoginMobile,
+      logoutAndCloseMenu,
       isMenuOpen,
       toggleMenu,
       closeMenu,
       checkLoginAndNavigate,
+      toggleProfileMenu,
+      profileMenuOpen,
+      isScrolled,
     };
   },
   computed: {
@@ -98,94 +135,115 @@ export default {
 
 <style scoped>
 .header {
-  background-color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #333;
+  color: #fff;
+  padding: 1rem;
   position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
+  width: 100%;
   z-index: 1000;
+  transition: background-color 0.3s;
+}
+
+.header.scrolled {
+  background-color: #222;
 }
 
 .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .logo-link {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #3a86ff;
+  font-weight: bold;
+  color: #fff;
   text-decoration: none;
-  letter-spacing: 1px;
-  transition: color 0.3s ease;
-}
-
-.logo-link:hover {
-  color: #2563eb;
 }
 
 .nav {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .nav-link {
-  color: #4a5568;
+  color: #fff;
   text-decoration: none;
-  font-weight: 500;
   transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #f39c12;
+}
+
+.auth {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-profile {
   position: relative;
+  cursor: pointer;
 }
 
-.nav-link::after {
-  content: '';
+.profile-menu {
+  display: none;
   position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: #3a86ff;
-  transition: width 0.3s ease;
+  top: 100%;
+  right: 0;
+  background-color: #333;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
 }
 
-.nav-link:hover::after {
-  width: 100%;
+.profile-menu-link {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  padding: 0.5rem 1rem;
+}
+
+.profile-menu-link:hover {
+  background-color: #444;
+}
+
+.profile-menu-link:last-of-type {
+  border-top: 1px solid #444;
+}
+
+.user-profile:hover .profile-menu {
+  display: block;
 }
 
 .btn {
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1rem;
   border: none;
-  border-radius: 25px;
-  font-weight: 500;
+  border-radius: 4px;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease;
 }
 
 .btn-login {
-  background-color: #3a86ff;
-  color: #ffffff;
+  background-color: #3498db;
+  color: #fff;
 }
 
 .btn-login:hover {
-  background-color: #2563eb;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(58, 134, 255, 0.2);
+  background-color: #2980b9;
 }
 
 .btn-logout {
-  background-color: #e2e8f0;
-  color: #4a5568;
+  background-color: #e74c3c;
+  color: #fff;
 }
 
 .btn-logout:hover {
-  background-color: #cbd5e0;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(203, 213, 224, 0.2);
+  background-color: #c0392b;
 }
 
 .menu-toggle {
@@ -193,14 +251,12 @@ export default {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 10px;
 }
 
 .menu-icon {
-  display: block;
   width: 25px;
-  height: 3px;
-  background-color: #4a5568;
+  height: 2px;
+  background-color: #fff;
   position: relative;
   transition: background-color 0.3s ease;
 }
@@ -210,8 +266,8 @@ export default {
   content: '';
   position: absolute;
   width: 25px;
-  height: 3px;
-  background-color: #4a5568;
+  height: 2px;
+  background-color: #fff;
   transition: transform 0.3s ease;
 }
 
@@ -225,70 +281,41 @@ export default {
 
 .mobile-menu {
   display: none;
+  flex-direction: column;
+  background-color: #333;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  padding: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  transform: translateY(-100%);
+}
+
+.mobile-menu.is-active {
+  display: flex;
+  transform: translateY(0);
+}
+
+.mobile-nav-link {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.mobile-nav-link:hover {
+  color: #f39c12;
 }
 
 @media (max-width: 768px) {
-
-  .nav,
-  .auth {
+  .nav {
     display: none;
   }
 
   .menu-toggle {
     display: block;
   }
-
-  .mobile-menu {
-    display: flex;
-    flex-direction: column;
-    background-color: #ffffff;
-    padding: 1rem;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transform: translateY(-100%);
-    transition: transform 0.3s ease;
-  }
-
-  .mobile-menu.is-active {
-    transform: translateY(0);
-  }
-
-  .mobile-nav-link {
-    color: #4a5568;
-    text-decoration: none;
-    padding: 0.75rem 0;
-    font-weight: 500;
-    border-bottom: 1px solid #e2e8f0;
-  }
-
-  .mobile-menu .btn {
-    margin-top: 1rem;
-    width: 100%;
-  }
-
-  .menu-toggle[aria-expanded="true"] .menu-icon {
-    background-color: transparent;
-  }
-
-  .menu-toggle[aria-expanded="true"] .menu-icon::before {
-    transform: translateY(8px) rotate(45deg);
-  }
-
-  .menu-toggle[aria-expanded="true"] .menu-icon::after {
-    transform: translateY(-8px) rotate(-45deg);
-  }
-}
-
-.auth {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.sessionId {
-  margin-right: 1rem;
 }
 </style>

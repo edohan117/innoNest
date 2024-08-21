@@ -54,6 +54,11 @@ export default {
   padding: 4rem 2rem;
   border-radius: 8px;
   margin-bottom: 2rem;
+  /* 기본적으로 flexbox를 사용하여 내용 중앙 정렬 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 h2 {
@@ -82,6 +87,44 @@ p {
 .cta-button:hover {
   background-color: #2980b9;
   color: #fff;
-  width: 100%;
+}
+
+/* 반응형 디자인 설정 */
+@media (max-width: 768px) {
+  .hero {
+    padding: 3rem 1.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+
+  .cta-button {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 2rem 1rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+  }
+
+  .cta-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+  }
 }
 </style>
