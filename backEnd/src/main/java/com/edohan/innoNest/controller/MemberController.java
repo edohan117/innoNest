@@ -31,7 +31,6 @@ public class MemberController {
         String id = loginRequest.get("id");
         String password = loginRequest.get("password");
         Map<String, Object> response = service.authenticate(id, password);
-        System.out.println("##############################  response :  "+ response);
 
         if ("success".equals(response.get("status"))) {
             session.setAttribute("id", id);
