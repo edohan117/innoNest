@@ -1,8 +1,8 @@
 <template>
   <section class="idea-list">
-    <h3>High View Posts</h3>
+    <h2>My Settings</h2>
     <div class="idea-grid">
-      <router-link v-for="idea in highViewCount" :key="idea.ID" :to="{ name: 'IdeaDetail', params: { id: idea.ID } }"
+      <router-link v-for="idea in paginatedIdeas" :key="idea.ID" :to="{ name: 'IdeaDetail', params: { id: idea.ID } }"
         class="idea-card-link">
         <article class="idea-card">
           <h3 class="idea-title">{{ idea.TITLE }}</h3>
@@ -26,22 +26,71 @@
         </article>
       </router-link>
     </div>
+
+    <div class="pagination">
+      <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Previous</button>
+
+      <button v-for="page in pageNumbers" :key="page" @click="changePage(page)"
+        :class="{ 'active': page === currentPage }">
+        {{ page }}
+      </button>
+
+      <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Next</button>
+    </div>
   </section>
 </template>
 
+
 <script>
+import axios from 'axios';
+
 export default {
-  name: 'HighViewCount',
-  props: {
-    highViewCount: {
-      type: Array,
-      required: true,
+  name: 'MySettings',
+  data() {
+    return {
+      ideas: [],        // 전체 아이디어 리스트
+      currentPage: 1,   // 현재 페이지
+      pageSize: 6      // 페이지당 아이디어 개수
+    };
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.ideas.length / this.pageSize);
     },
+    paginatedIdeas() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.ideas.slice(start, end);
+    },
+    pageNumbers() {
+      const pages = [];
+      for (let i = 1; i <= this.totalPages; i++) {
+        pages.push(i);
+      }
+      return pages;
+    }
+  },
+  created() {
+    this.fetchIdeaList();
   },
   methods: {
+    fetchIdeaList() {
+      axios.get('api/idea/list')
+        .then(response => {
+          this.ideas = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching idea list:', error);
+        });
+    },
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+    changePage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
     },
     parseTags(tagsString) {
       return tagsString.split(',').map(tag => tag.trim());
@@ -50,67 +99,51 @@ export default {
 };
 </script>
 
+
 <style scoped>
-/* Container for the idea list */
+/* Existing styles */
 .idea-list {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+}
+
+h2 {
+  font-size: 2.5rem;
+  color: #333;
   margin-bottom: 2rem;
   text-align: center;
 }
 
-/* Title styles */
-h3 {
-  font-size: 2rem;
-  /* Increased font size for consistency */
-  color: #333;
-  margin-bottom: 2rem;
-}
-
-/* Flex container for the idea cards */
 .idea-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  /* Gap between cards */
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
 }
 
-/* Style for each idea card link */
 .idea-card-link {
   text-decoration: none;
-  flex: 1 1 300px;
-  /* Allows cards to grow and shrink, with a minimum width of 300px */
 }
 
-/* Style for each idea card */
 .idea-card {
   background-color: #fff;
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  /* Ensures all cards are the same height */
 }
 
-/* Hover effect for cards */
 .idea-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
 }
 
-/* Title styling */
 .idea-title {
   font-size: 1.4rem;
   color: #2c3e50;
   margin-bottom: 0.75rem;
 }
 
-/* Content styling */
 .idea-content {
   font-size: 1rem;
   color: #34495e;
@@ -118,7 +151,6 @@ h3 {
   line-height: 1.6;
 }
 
-/* Meta information styling */
 .idea-meta {
   display: flex;
   flex-direction: column;
@@ -127,7 +159,6 @@ h3 {
   color: #7f8c8d;
 }
 
-/* Aligning elements within meta section */
 .idea-author,
 .idea-stats,
 .idea-date {
@@ -136,7 +167,6 @@ h3 {
   gap: 0.5rem;
 }
 
-/* Flex properties for stats */
 .idea-stats {
   display: flex;
   justify-content: space-between;
@@ -148,13 +178,12 @@ h3 {
   gap: 0.3rem;
 }
 
-/* Icon styling */
 i {
   font-size: 1rem;
   color: #3498db;
 }
 
-/* Pagination styling */
+/* Pagination styles */
 .pagination {
   display: flex;
   justify-content: center;
@@ -187,12 +216,12 @@ i {
   font-weight: bold;
 }
 
-/* Tags styling */
 .idea-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.5rem;
+  /* 태그와 내용 사이에 간격 추가 */
 }
 
 .tag {

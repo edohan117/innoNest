@@ -2,9 +2,10 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-section">
-        <h3>InnoNest</h3>
-        <p>혁신적인 아이디어의 온상, InnoNest에서 여러분의 창의력을 펼쳐보세요.</p>
-      </div>
+    <h3>InnoNest</h3>
+    <p>혁신적인 아이디어의 온상</p>
+    <p>InnoNest에서 여러분의 창의력을 펼쳐보세요.</p>
+</div>
       <div class="footer-section">
         <h3>빠른 링크</h3>
         <ul>
@@ -17,18 +18,19 @@
       <div class="footer-section">
         <h3>소셜 미디어</h3>
         <div class="social-icons">
-          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="https://www.instagram.com/lumiere_edohan/" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+            <i class="bi bi-instagram"></i>
+          </a>
+          <a href="https://www.instagram.com/lumiere_edohan/" aria-label="Twitter" target="_blank" rel="noopener noreferrer">
+            <i class="bi bi-twitter-x"></i>
+          </a>
+          <a href="https://www.instagram.com/lumiere_edohan/" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+            <i class="bi bi-facebook"></i>
+          </a>
+          <a href="https://www.instagram.com/lumiere_edohan/" aria-label="Youtube" target="_blank" rel="noopener noreferrer">
+            <i class="bi bi-youtube"></i>
+          </a>
         </div>
-      </div>
-      <div class="footer-section">
-        <h3>뉴스레터 구독</h3>
-        <form @submit.prevent="subscribeNewsletter" class="newsletter-form">
-          <input type="email" v-model="email" placeholder="이메일 주소" required>
-          <button type="submit">구독</button>
-        </form>
       </div>
     </div>
     <div class="footer-bottom">
@@ -46,13 +48,6 @@ export default {
     }
   },
   methods: {
-    subscribeNewsletter() {
-      // 여기에 뉴스레터 구독 로직을 구현합니다.
-      console.log('구독 이메일:', this.email);
-      // API 호출 등의 로직을 추가할 수 있습니다.
-      this.email = ''; // 폼 초기화
-      alert('뉴스레터 구독이 완료되었습니다!');
-    }
   }
 }
 </script>

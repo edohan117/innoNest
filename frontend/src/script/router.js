@@ -11,6 +11,10 @@ import NoticeEdit from '@/views/NoticeEdit.vue';
 import NoticeCreate from '@/views/NoticeCreate.vue';
 import Register from '@/views/RegisterPage.vue';
 import MemberList from '@/views/MemberList.vue';
+import Challenge from '@/views/Challenge.vue';
+import Profile from '@/views/Profile.vue';
+import MyIdea from '@/views/MyIdea.vue';
+import MySettings from '@/views/MySettings.vue';
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
@@ -25,6 +29,10 @@ const routes = [
   { path: '/noticeCreate', name: 'NoticeCreate', component: NoticeCreate },
   { path: '/register', name: 'Register', component: Register },
   { path: '/memberList', name: 'MemberList', component: MemberList },
+  { path: '/challenge', name: 'Challenge', component: Challenge },
+  { path: '/profile', name: 'Profile', component: Profile },
+  { path: '/myIdea', name: 'MyIdea', component: MyIdea },
+  { path: '/mySettings', name: 'MySettings', component: MySettings },
 ];
 
 const router = createRouter({

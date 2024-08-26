@@ -7,8 +7,9 @@
       <nav class="nav">
         <router-link to="/ideaList" class="nav-link">List</router-link>
         <a href="#" @click.prevent="checkLoginAndNavigate('/ideaSubmit')" class="nav-link">Submit</a>
+        <router-link to="/challenge" class="nav-link">Challenge</router-link>
         <router-link to="/noticeList" class="nav-link">Notice</router-link>
-        <div v-if="canView">
+        <div v-if="roleAdmin">
           <router-link to="/memberList" class="nav-link">Member</router-link>
         </div>
       </nav>
@@ -18,8 +19,8 @@
           <span class="sessionId">{{ user.username }} 님</span>
           <div v-if="profileMenuOpen" class="profile-menu">
             <router-link to="/profile" @click="closeMenu" class="profile-menu-link">Profile</router-link>
-            <router-link to="/settings" @click="closeMenu" class="profile-menu-link">Settings</router-link>
-            <button @click="logout" class="profile-menu-link">Logout</button>
+            <router-link to="/myIdea" @click="closeMenu" class="profile-menu-link">My Idea</router-link>
+            <router-link to="/mySettings" @click="closeMenu" class="profile-menu-link">Settings</router-link>
           </div>
         </div>
         <button v-if="!isLoggedIn" @click="goToLogin" class="btn btn-login">Login</button>
@@ -126,7 +127,7 @@ export default {
     };
   },
   computed: {
-    canView() {
+    roleAdmin() {
       return this.role === 'ADMIN';
     }
   },
@@ -188,6 +189,7 @@ export default {
 .user-profile {
   position: relative;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .profile-menu {
@@ -205,6 +207,9 @@ export default {
   text-decoration: none;
   display: block;
   padding: 0.5rem 1rem;
+  white-space: nowrap; /* 이 속성을 추가하여 텍스트가 한 줄에 나오도록 강제합니다 */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile-menu-link:hover {
@@ -317,5 +322,11 @@ export default {
   .menu-toggle {
     display: block;
   }
+}
+
+.auth .sessionId {
+  white-space: nowrap; /* 사용자 이름도 두 줄로 나오지 않게 설정 */
+  overflow: hidden; /* 텍스트가 컨테이너를 넘지 않도록 설정 */
+  text-overflow: ellipsis; /* 필요 시 말줄임표 표시 */
 }
 </style>
