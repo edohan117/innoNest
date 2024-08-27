@@ -1,4 +1,4 @@
-package com.edohan.innoNest.service;
+package com.edohan.innoNest.service.impl;
 
 import java.util.*;
 
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.edohan.innoNest.mapper.MemberMapper;
+import com.edohan.innoNest.service.MemberService;
 
 @Service("memberService")
 public class MemberServiceImpl implements MemberService {
@@ -45,5 +46,11 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     public List<Map<String, Object>> memberList() {
         return mapper.memberList();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> getProfile(String id) {
+        return mapper.getProfileById(id);
     }
 }

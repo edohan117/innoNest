@@ -13,7 +13,7 @@
             </div>
             <div class="idea-stats">
               <span>LIKES {{ idea.LIKE_COUNT }}<i class="bi bi-hand-thumbs-up"></i></span>
-              <span>UNLIKES {{ idea.UNLIKE_COUNT }}<i class="bi bi-hand-thumbs-down"></i></span>
+              <span>DISLIKES {{ idea.DISLIKE_COUNT }}<i class="bi bi-hand-thumbs-down"></i></span>
               <span>VIEW {{ idea.VIEW_COUNT }}</span>
             </div>
             <div class="idea-date">

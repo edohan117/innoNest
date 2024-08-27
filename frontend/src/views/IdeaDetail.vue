@@ -13,16 +13,20 @@
         </div>
       </div>
       <div class="idea-content">
-        <p>{{ idea.CONTENT }}</p>
+        <pre>{{ idea.CONTENT }}</pre>
       </div>
       <div class="interaction-stats">
         <div class="stat-item">
           <span>LIKES {{ idea.LIKE_COUNT }}</span>
-          <i class="bi bi-hand-thumbs-up"></i>
+          <button class="btn-icon" :class="{ active: userReaction === 'LIKE' }" @click="toggleLike">
+            <i class="bi bi-hand-thumbs-up"></i>
+          </button>
         </div>
         <div class="stat-item">
-          <span>UNLIKES {{ idea.UNLIKE_COUNT }}</span>
-          <i class="bi bi-hand-thumbs-down"></i>
+          <span>DISLIKES {{ idea.DISLIKE_COUNT }}</span>
+          <button class="btn-icon" :class="{ active: userReaction === 'DISLIKE' }" @click="toggleDislike">
+            <i class="bi bi-hand-thumbs-down"></i>
+          </button>
         </div>
         <div class="stat-item">
           <i class="fas fa-eye"></i>
@@ -43,85 +47,159 @@
   </section>
 </template>
 
-
 <script>
 import axios from 'axios';
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
+import { useRoute, useRouter } from 'vue-router';
 
 export default {
   name: 'IdeaDetail',
-  data() {
-    return {
-      idea: {}
-    };
-  },
-  created() {
-    this.fetchIdeaDetail();
-  },
   setup() {
     const store = useStore();
+    const route = useRoute();
+    const router = useRouter();
+
     const user = computed(() => store.getters.user);
     const role = computed(() => store.getters.role);
 
-    return {
-      user,
-      role,
-    };
-  },
-  methods: {
-    fetchIdeaDetail() {
-      const ideaId = this.$route.params.id;
-      const userId = this.user?.id; // Vuex에서 가져온 사용자 ID
-      axios.get(`/api/idea/detail/${ideaId}`, {
-        headers: {
-          'User-Id': userId // 사용자 ID를 헤더에 추가
-        }
-      })
-        .then(response => {
-          this.idea = response.data;
-        })
-        .catch(error => {
-          console.error('아이디어 세부정보를 가져오는 중 오류 발생:', error);
+    const idea = ref({});
+    const userReaction = ref(null);
+
+    const fetchIdeaDetail = async () => {
+      const ideaId = route.params.id;
+      const userId = user.value?.id;
+      try {
+        const response = await axios.get(`/api/idea/detail/${ideaId}`, {
+          headers: {
+            'User-Id': userId
+          }
         });
-    },
-    formatDate(dateString) {
+        idea.value = response.data;
+        fetchUserReaction();
+      } catch (error) {
+        console.error('아이디어 세부정보를 가져오는 중 오류 발생:', error);
+      }
+    };
+
+    const fetchUserReaction = async () => {
+      const ideaId = route.params.id;
+      const userId = user.value?.id;
+      if (userId) {
+        try {
+          const response = await axios.get(`/api/idea/reaction/count/${ideaId}`, {
+            headers: {
+              'User-Id': userId
+            }
+          });
+          userReaction.value = response.data.reactionType;
+        } catch (error) {
+          console.error('사용자 반응을 가져오는 중 오류 발생:', error);
+        }
+      }
+    };
+
+    const formatDate = (dateString) => {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(dateString).toLocaleDateString(undefined, options);
-    },
-    goToEditPage() {
-      this.$router.push({ name: 'IdeaEdit', params: { id: this.$route.params.id } });
-    },
-    deleteIdea() {
-      const ideaId = this.$route.params.id;
+    };
+
+    const goToEditPage = () => {
+      router.push({ name: 'IdeaEdit', params: { id: route.params.id } });
+    };
+
+    const deleteIdea = async () => {
+      const ideaId = route.params.id;
       if (confirm('정말로 이 아이디어를 삭제하시겠습니까?')) {
-        axios.delete(`/api/idea/delete/${ideaId}`)
-          .then(() => {
-            alert('아이디어가 삭제되었습니다.');
-            this.$router.push({ name: 'IdeaList' }); // 아이디어 목록 페이지로 이동
-          })
-          .catch(error => {
-            console.error('아이디어를 삭제하는 중 오류 발생:', error);
-          });
+        try {
+          await axios.delete(`/api/idea/delete/${ideaId}`);
+          alert('아이디어가 삭제되었습니다.');
+          router.push({ name: 'IdeaList' });
+        } catch (error) {
+          console.error('아이디어를 삭제하는 중 오류 발생:', error);
+        }
       }
-    },
-    parseTags(tagsString) {
+    };
+
+    const parseTags = (tagsString) => {
       return tagsString ? tagsString.split(',').map(tag => tag.trim()) : [];
-    }
-  },
-  computed: {
-    canEditOrDelete() {
-      // user와 role이 유효한지 확인
-      if (!this.user || !this.user.id || !this.role) {
+    };
+
+    const toggleLike = async () => {
+      const ideaId = route.params.id;
+      const userId = user.value?.id;
+      try {
+        if (userReaction.value === 'LIKE') {
+          await axios.delete(`/api/idea/reaction/${ideaId}`, {
+            data: {
+              userId,
+              reactionType: 'LIKE'
+            }
+          });
+          userReaction.value = null;
+        } else {
+          await axios.post(`/api/idea/reaction/${ideaId}`, {
+            userId,
+            reactionType: 'LIKE'
+          });
+          userReaction.value = 'LIKE';
+        }
+        fetchIdeaDetail(); // 새로고침하여 반영
+      } catch (error) {
+        console.error('아이디어를 좋아요 하는 중 오류 발생:', error);
+      }
+    };
+
+    const toggleDislike = async () => {
+      const ideaId = route.params.id;
+      const userId = user.value?.id;
+      try {
+        if (userReaction.value === 'DISLIKE') {
+          await axios.delete(`/api/idea/reaction/${ideaId}`, {
+            data: {
+              userId,
+              reactionType: 'DISLIKE'
+            }
+          });
+          userReaction.value = null;
+        } else {
+          await axios.post(`/api/idea/reaction/${ideaId}`, {
+            userId,
+            reactionType: 'DISLIKE'
+          });
+          userReaction.value = 'DISLIKE';
+        }
+        fetchIdeaDetail(); // 새로고침하여 반영
+      } catch (error) {
+        console.error('아이디어를 싫어요 하는 중 오류 발생:', error);
+      }
+    };
+
+    const canEditOrDelete = computed(() => {
+      if (!user.value || !user.value.id || !role.value) {
         return false;
       }
-      // writer와 로그인한 사용자의 id가 같거나, role이 ADMIN일 경우에만 true 반환
-      return this.idea.WRITER === this.user.id || this.role === 'ADMIN';
-    }
+      return idea.value.WRITER === user.value.id || role.value === 'ADMIN';
+    });
+
+    onMounted(() => {
+      fetchIdeaDetail(); // 컴포넌트가 마운트될 때 아이디어 세부정보를 가져옴
+    });
+
+    return {
+      idea,
+      userReaction,
+      formatDate,
+      goToEditPage,
+      deleteIdea,
+      parseTags,
+      toggleLike,
+      toggleDislike,
+      canEditOrDelete
+    };
   }
 };
 </script>
-
 
 <style scoped>
 .idea-detail {
@@ -171,6 +249,12 @@ h2 {
   margin-bottom: 2rem;
 }
 
+.idea-content pre {
+  white-space: pre-wrap;
+  font-weight: 700;
+  color: #34495e;
+}
+
 .interaction-stats {
   display: flex;
   justify-content: flex-start;
@@ -204,6 +288,7 @@ h2 {
   padding: 0.3rem 0.6rem;
   font-size: 0.8rem;
   white-space: nowrap;
+  font-weight: 500;
 }
 
 .tag:hover {
@@ -225,6 +310,7 @@ h2 {
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-weight: 600;
 }
 
 .btn-secondary {
@@ -251,6 +337,34 @@ h2 {
 .edit-delete-buttons {
   display: flex;
   gap: 1rem;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #7f8c8d;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.btn-icon:hover {
+  color: #007bff;
+}
+
+.btn-icon i {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.btn-icon.active {
+  color: #007bff;
+}
+
+.btn-icon.active i {
+  color: #007bff;
 }
 
 @media (max-width: 600px) {

@@ -1,12 +1,12 @@
 <template>
   <footer class="footer">
     <div class="footer-content">
-      <div class="footer-section">
-    <h3>InnoNest</h3>
-    <p>혁신적인 아이디어의 온상</p>
-    <p>InnoNest에서 여러분의 창의력을 펼쳐보세요.</p>
-</div>
-      <div class="footer-section">
+      <div class="footer-section brand">
+        <h3>InnoNest</h3>
+        <p>혁신적인 아이디어의 온상</p>
+        <p>InnoNest에서 여러분의 창의력을 펼쳐보세요.</p>
+      </div>
+      <div class="footer-section links">
         <h3>빠른 링크</h3>
         <ul>
           <li><a href="/sitemap">사이트맵</a></li>
@@ -15,19 +15,25 @@
           <li><a href="/support">고객 지원</a></li>
         </ul>
       </div>
-      <div class="footer-section">
+      <div class="footer-section contact">
+        <h3>문의하기</h3>
+        <p><i class="bi bi-envelope"></i> info@innonest.com</p>
+        <p><i class="bi bi-telephone"></i> 02-1234-5678</p>
+        <p><i class="bi bi-geo-alt"></i> 서울시 강남구 테헤란로 123</p>
+      </div>
+      <div class="footer-section social">
         <h3>소셜 미디어</h3>
         <div class="social-icons">
           <a href="https://www.instagram.com/lumiere_edohan/" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
             <i class="bi bi-instagram"></i>
           </a>
-          <a href="https://www.instagram.com/lumiere_edohan/" aria-label="Twitter" target="_blank" rel="noopener noreferrer">
-            <i class="bi bi-twitter-x"></i>
+          <a href="https://twitter.com/" aria-label="Twitter" target="_blank" rel="noopener noreferrer">
+            <i class="bi bi-twitter"></i>
           </a>
-          <a href="https://www.instagram.com/lumiere_edohan/" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.facebook.com/" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
             <i class="bi bi-facebook"></i>
           </a>
-          <a href="https://www.instagram.com/lumiere_edohan/" aria-label="Youtube" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.youtube.com/" aria-label="Youtube" target="_blank" rel="noopener noreferrer">
             <i class="bi bi-youtube"></i>
           </a>
         </div>
@@ -42,25 +48,16 @@
 <script>
 export default {
   name: 'Footer',
-  data() {
-    return {
-      email: ''
-    }
-  },
-  methods: {
-  }
-}
+};
 </script>
 
 <style scoped>
 .footer {
-  background-color: #2c3e50;
-  color: #ecf0f1;
-  padding: 3rem 0 1rem;
-  flex-shrink: 0;
-  /* 추가 */
+  background-color: #1a1a2e;
+  color: #fff;
+  padding: 4rem 0 2rem;
+  font-family: 'Arial', sans-serif;
 }
-
 
 .footer-content {
   display: flex;
@@ -78,8 +75,20 @@ export default {
 }
 
 .footer-section h3 {
-  color: #3498db;
-  margin-bottom: 1rem;
+  color: #4ecca3;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.footer-section.brand h3 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-section.brand p {
+  color: #bbb;
+  font-size: 0.9rem;
 }
 
 .footer-section ul {
@@ -88,17 +97,17 @@ export default {
 }
 
 .footer-section ul li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
 }
 
 .footer-section a {
-  color: #ecf0f1;
+  color: #fff;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .footer-section a:hover {
-  color: #3498db;
+  color: #4ecca3;
 }
 
 .social-icons {
@@ -112,46 +121,38 @@ export default {
   justify-content: center;
   width: 40px;
   height: 40px;
-  background-color: #34495e;
+  background-color: #2c2c44;
   border-radius: 50%;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .social-icons a:hover {
-  background-color: #3498db;
+  background-color: #4ecca3;
+  transform: translateY(-3px);
 }
 
-.newsletter-form {
-  display: flex;
-  margin-top: 1rem;
-}
-
-.newsletter-form input {
-  flex-grow: 1;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 4px 0 0 4px;
-}
-
-.newsletter-form button {
-  padding: 0.5rem 1rem;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 0 4px 4px 0;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.newsletter-form button:hover {
-  background-color: #2980b9;
+.social-icons i {
+  font-size: 1.2rem;
 }
 
 .footer-bottom {
   text-align: center;
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #34495e;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #2c2c44;
+  font-size: 0.9rem;
+  color: #bbb;
+}
+
+.footer-section.contact p {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.footer-section.contact i {
+  margin-right: 10px;
+  color: #4ecca3;
 }
 
 @media (max-width: 768px) {

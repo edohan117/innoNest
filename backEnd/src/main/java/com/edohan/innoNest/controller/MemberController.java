@@ -40,4 +40,13 @@ public class MemberController {
 
         return response;
     }
+
+    @GetMapping("/profile")
+    public Map<String, Object> getProfile(HttpSession session) {
+        String id = (String) session.getAttribute("id");
+        if (id == null) {
+            return Collections.singletonMap("status", "error");
+        }
+        return service.getProfile(id);
+    }
 }

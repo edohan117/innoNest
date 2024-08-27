@@ -59,4 +59,22 @@
         WHERE ID = #{id}
     </select>
     
+    <select id="getProfileById" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT 
+            ID,
+            USERNAME,
+            EMAIL,
+            PHONE,
+            ROLE,
+            PROFILE_PICTURE,
+            BIO,
+            SOCIAL_LINKS,
+            LOCATION,
+            CREATEDATE,
+            UPDATEDATE
+        FROM 
+            TB_MEMBER
+        WHERE 
+            ID = #{id}
+    </select>
 </mapper>

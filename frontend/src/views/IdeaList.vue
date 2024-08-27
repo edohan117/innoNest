@@ -2,18 +2,17 @@
   <section class="idea-list">
     <h2>Idea Showcase</h2>
     <div class="idea-grid">
-      <router-link v-for="idea in paginatedIdeas" :key="idea.ID" :to="{ name: 'IdeaDetail', params: { id: idea.ID } }"
-        class="idea-card-link">
+      <router-link v-for="idea in paginatedIdeas" :key="idea.ID" :to="{ name: 'IdeaDetail', params: { id: idea.ID } }" class="idea-card-link">
         <article class="idea-card">
           <h3 class="idea-title">{{ idea.TITLE }}</h3>
-          <p class="idea-content">{{ idea.CONTENT }}</p>
+          <p class="idea-content">{{ truncateText(idea.CONTENT, 80) }}</p> <!-- 한 줄당 최대 80자로 설정 -->
           <div class="idea-meta">
             <div class="idea-author">
               <span>{{ idea.WRITER }}</span>
             </div>
             <div class="idea-stats">
               <span>LIKES {{ idea.LIKE_COUNT }}<i class="bi bi-hand-thumbs-up"></i></span>
-              <span>UNLIKES {{ idea.UNLIKE_COUNT }}<i class="bi bi-hand-thumbs-down"></i></span>
+              <span>DISLIKES {{ idea.DISLIKE_COUNT }}<i class="bi bi-hand-thumbs-down"></i></span>
               <span>VIEW {{ idea.VIEW_COUNT }}</span>
             </div>
             <div class="idea-date">
@@ -39,7 +38,6 @@
     </div>
   </section>
 </template>
-
 
 <script>
 import axios from 'axios';
@@ -94,14 +92,32 @@ export default {
     },
     parseTags(tagsString) {
       return tagsString.split(',').map(tag => tag.trim());
+    },
+    truncateText(text, maxLength) {
+      // 텍스트를 두 줄로 제한
+      let lines = text.split('\n');
+      let truncatedText = '';
+
+      // 각 줄을 maxLength로 자르기
+      for (let i = 0; i < lines.length; i++) {
+        if (i < 2) { // 두 줄까지만 처리
+          truncatedText += lines[i].slice(0, maxLength);
+          if (i < 1) truncatedText += '\n'; // 줄바꿈 추가
+        }
+      }
+
+      // 텍스트가 자르고 나서도 길면 말줄임표 추가
+      if (text.length > maxLength * 2) {
+        truncatedText += '...';
+      }
+
+      return truncatedText;
     }
   }
 };
 </script>
 
-
 <style scoped>
-/* Existing styles */
 .idea-list {
   max-width: 1200px;
   margin: 0 auto;
@@ -144,11 +160,15 @@ h2 {
   margin-bottom: 0.75rem;
 }
 
+/* 줄 수를 제한하는 텍스트 스타일 */
 .idea-content {
   font-size: 1rem;
   color: #34495e;
   margin-bottom: 1rem;
   line-height: 1.6;
+  white-space: pre-wrap; /* 줄바꿈과 연속 공백을 그대로 유지 */
+  overflow: hidden; /* 넘치는 텍스트 숨기기 */
+  text-overflow: ellipsis; /* 잘린 텍스트에 말줄임표 표시 */
 }
 
 .idea-meta {
@@ -221,7 +241,6 @@ i {
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.5rem;
-  /* 태그와 내용 사이에 간격 추가 */
 }
 
 .tag {
