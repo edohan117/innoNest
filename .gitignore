@@ -1,1 +1,3 @@
 .metadata/.log
+backEnd/build.gradle
+backEnd/src/main/resources/application.properties
