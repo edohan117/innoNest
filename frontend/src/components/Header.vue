@@ -7,20 +7,20 @@
       <nav class="nav">
         <router-link to="/ideaList" class="nav-link">List</router-link>
         <a href="#" @click.prevent="checkLoginAndNavigate('/ideaSubmit')" class="nav-link">Submit</a>
-        <router-link to="/challenge" class="nav-link">Challenge</router-link>
+        <router-link to="/challengeList" class="nav-link">Challenge</router-link>
         <router-link to="/noticeList" class="nav-link">Notice</router-link>
         <div v-if="roleAdmin">
-          <router-link to="/memberList" class="nav-link">Member</router-link>
         </div>
       </nav>
       <div class="auth">
-        <router-link v-if="role === 'ADMIN'" to="/adminDashboard" class="nav-link">Admin</router-link>
         <div v-if="isLoggedIn && user && user.id" class="user-profile" @click="toggleProfileMenu">
           <span class="sessionId">{{ user.username }} 님</span>
           <div v-if="profileMenuOpen" class="profile-menu">
-            <router-link to="/profile" @click="closeMenu" class="profile-menu-link">Profile</router-link>
+            <router-link to="/myProfile" @click="closeMenu" class="profile-menu-link">Profile</router-link>
             <router-link to="/myIdea" @click="closeMenu" class="profile-menu-link">My Idea</router-link>
             <router-link to="/mySettings" @click="closeMenu" class="profile-menu-link">Settings</router-link>
+            <router-link v-if="role === 'ADMIN'" to="/memberList" class="profile-menu-link">Member</router-link>
+            <router-link v-if="role === 'ADMIN'" to="/adminPage" class="profile-menu-link">ADMIN</router-link>
           </div>
         </div>
         <button v-if="!isLoggedIn" @click="goToLogin" class="btn btn-login">Login</button>

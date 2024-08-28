@@ -2,7 +2,7 @@
   <section class="hero">
     <h2>Go Challenge</h2>
     <p>Share your innovative ideas and connect with like-minded individuals</p>
-    <a href="#" @click.prevent="checkLoginAndNavigate('/ideaSubmit')" class="cta-button">Start Sharing</a>
+    <a href="#" @click.prevent="checkLoginAndNavigate('/ChallengeSubmit')" class="cta-button">Start Sharing</a>
   </section>
 </template>
   

@@ -110,8 +110,6 @@ input[type="text"], textarea {
 textarea {
   height: 150px;
   resize: vertical;
-  white-space: pre-wrap; /* 줄바꿈과 연속 공백을 그대로 유지 */
-  overflow: auto; /* 텍스트가 넘치면 스크롤 가능 */
 }
 
 .form-actions {

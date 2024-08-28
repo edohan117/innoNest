@@ -1,4 +1,4 @@
-package com.edohan.innoNest.service;
+package com.edohan.innoNest.service.impl;
 
 import java.util.*;
 
@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.edohan.innoNest.mapper.InnoIdeaMapper;
+import com.edohan.innoNest.service.InnoIdeaSerive;
 
 @Service("innoIdeaService")
 public class InnoIdeaServiceImpl implements InnoIdeaSerive {
@@ -41,5 +42,20 @@ public class InnoIdeaServiceImpl implements InnoIdeaSerive {
     @Override
     public void incViewCount(int id) {
         mapper.incViewCount(id);
+    }
+
+    @Override
+    public void addReaction(String userId, int ideaId, String reactionType) {
+        mapper.addReaction(userId, ideaId, reactionType);
+    }
+
+    @Override
+    public void removeReaction(String userId, int ideaId, String reactionType) {
+        mapper.removeReaction(userId, ideaId, reactionType);
+    }
+
+    @Override
+    public Map<String, Integer> getReactionCounts(int ideaId) {
+        return mapper.getReactionCounts(ideaId);
     }
 }

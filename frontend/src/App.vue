@@ -22,8 +22,7 @@ export default {
 </script>
 
 <style>
-html,
-body {
+html, body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -33,5 +32,9 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+.main-content {
+  flex: 1; /* 이 속성으로 main-content 영역이 남은 공간을 차지하도록 합니다 */
 }
 </style>
