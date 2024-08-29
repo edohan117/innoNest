@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.edohan.innoNest.mapper.InnoCategoryMapper;
-import com.edohan.innoNest.service.InnoCategorySerive;
+import com.edohan.innoNest.service.InnoCategorySerice;
 
 @Service("innoCategoryService")
-public class InnoCategoryServiceImpl implements InnoCategorySerive {
+public class InnoCategoryServiceImpl implements InnoCategorySerice {
     
     @Autowired
     private InnoCategoryMapper mapper;

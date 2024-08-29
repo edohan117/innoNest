@@ -2,7 +2,7 @@ package com.edohan.innoNest.service;
 
 import java.util.*;
 
-public interface InnoIdeaSerive {
+public interface InnoIdeaSerice {
     List<Map<String, Object>> innoIdeaList();
     Map<String, Object> getIdeaDetail(int id);
     void saveIdea(String userId, String title, String content, String tags, String category);

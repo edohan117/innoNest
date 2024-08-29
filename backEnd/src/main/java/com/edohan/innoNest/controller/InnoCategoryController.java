@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.edohan.innoNest.service.InnoCategorySerive;
+import com.edohan.innoNest.service.InnoCategorySerice;
 
 @RestController
 @RequestMapping("/api/category")
 public class InnoCategoryController {
     
     @Autowired
-    private InnoCategorySerive service;
+    private InnoCategorySerice service;
 
     @GetMapping("/list")
     public List<Map<String, Object>> ideaList() {

@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.edohan.innoNest.mapper.InnoNoticeMapper;
-import com.edohan.innoNest.service.InnoNoticeSerive;
+import com.edohan.innoNest.service.InnoNoticeSerice;
 
 @Service("innoNoticeService")
-public class InnoNoticeServiceImpl implements InnoNoticeSerive {
+public class InnoNoticeServiceImpl implements InnoNoticeSerice {
     
     @Autowired
     private InnoNoticeMapper mapper;

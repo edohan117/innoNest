@@ -2,6 +2,6 @@ package com.edohan.innoNest.service;
 
 import java.util.*;
 
-public interface InnoCategorySerive {
+public interface InnoCategorySerice {
     List<Map<String, Object>> innoCategoryList();
 } 

@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.edohan.innoNest.mapper.MainMapper;
-import com.edohan.innoNest.service.MainSerive;
+import com.edohan.innoNest.service.MainSerice;
 
 @Service("MainService")
-public class MainServiceImpl implements MainSerive {
+public class MainServiceImpl implements MainSerice {
     
     @Autowired
     private MainMapper mapper;

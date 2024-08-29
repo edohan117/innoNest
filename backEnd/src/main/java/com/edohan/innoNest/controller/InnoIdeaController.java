@@ -5,7 +5,7 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.edohan.innoNest.service.InnoIdeaSerive;
+import com.edohan.innoNest.service.InnoIdeaSerice;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class InnoIdeaController {
     
     @Autowired
-    private InnoIdeaSerive service;
+    private InnoIdeaSerice service;
 
     @GetMapping("/list")
     public List<Map<String, Object>> ideaList() {
