@@ -27,7 +27,7 @@ public class InnoNoticeController {
     }
 
     @GetMapping("/detail/{id}")
-    public Map<String, Object> getNoticeDetail(@PathVariable int id) {
+    public Map<String, Object> getNoticeDetail(@PathVariable("id") int id) {
         return service.getNoticeDetail(id);
     }
 
@@ -40,14 +40,14 @@ public class InnoNoticeController {
     }
 
     @PutMapping("/update/{id}")
-    public void updateNotice(@PathVariable int id, @RequestBody Map<String, String> notice) {
+    public void updateNotice(@PathVariable("id") int id, @RequestBody Map<String, String> notice) {
         String title = notice.get("TITLE");
         String content = notice.get("CONTENT");
         service.updateNotice(id, title, content);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteNotice(@PathVariable int id) {
+    public void deleteNotice(@PathVariable("id") int id) {
         service.deleteNotice(id);
     }
 }

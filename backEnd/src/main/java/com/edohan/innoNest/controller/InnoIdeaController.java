@@ -22,7 +22,7 @@ public class InnoIdeaController {
     }
 
     @GetMapping("/detail/{id}")
-    public Map<String, Object> getIdeaDetail(@PathVariable int id, HttpServletRequest request, @RequestHeader(value = "User-Id", required = false) String userId) {
+    public Map<String, Object> getIdeaDetail(@PathVariable("id") int id, HttpServletRequest request, @RequestHeader(value = "User-Id", required = false) String userId) {
         Map<String, Object> ideaDetail = service.getIdeaDetail(id);
     
         if (userId != null && !userId.equals(ideaDetail.get("WRITER"))) {
@@ -51,7 +51,7 @@ public class InnoIdeaController {
 
     // 아이디어 수정
     @PutMapping("/update/{id}")
-    public void updateIdea(@PathVariable int id, @RequestBody Map<String, String> idea) {
+    public void updateIdea(@PathVariable("id") int id, @RequestBody Map<String, String> idea) {
         String title = idea.get("TITLE");
         String content = idea.get("CONTENT");
         service.updateIdea(id, title, content);
@@ -59,13 +59,13 @@ public class InnoIdeaController {
 
     // 아이디어 삭제
     @DeleteMapping("/delete/{id}")
-    public void deleteIdea(@PathVariable int id) {
+    public void deleteIdea(@PathVariable("id") int id) {
         service.deleteIdea(id);
     }
 
     // 좋아요/싫어요 추가
     @PostMapping("/reaction/{id}")
-    public void addReaction(@PathVariable int id, @RequestBody Map<String, String> request) {
+    public void addReaction(@PathVariable("id") int id, @RequestBody Map<String, String> request) {
         String userId = request.get("userId");
         String reactionType = request.get("reactionType"); // "LIKE" or "DISLIKE"
         service.addReaction(userId, id, reactionType);
@@ -73,14 +73,14 @@ public class InnoIdeaController {
 
     // 좋아요/싫어요 취소
     @DeleteMapping("/reaction/{id}")
-    public void removeReaction(@PathVariable int id, @RequestBody Map<String, String> request) {
+    public void removeReaction(@PathVariable("id") int id, @RequestBody Map<String, String> request) {
         String userId = request.get("userId");
         String reactionType = request.get("reactionType"); // "LIKE" or "DISLIKE"
         service.removeReaction(userId, id, reactionType);
     }
 
     @GetMapping("/reaction/count/{id}")
-    public Map<String, Integer> getReactionCounts(@PathVariable int id) {
+    public Map<String, Integer> getReactionCounts(@PathVariable("id") int id) {
         System.out.println(" /reaction/count/{id}  id :  "+id);
         return service.getReactionCounts(id);
     }
