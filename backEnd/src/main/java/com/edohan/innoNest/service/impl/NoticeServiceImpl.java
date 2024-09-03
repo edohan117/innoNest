@@ -5,18 +5,18 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.edohan.innoNest.mapper.InnoNoticeMapper;
-import com.edohan.innoNest.service.InnoNoticeSerice;
+import com.edohan.innoNest.mapper.NoticeMapper;
+import com.edohan.innoNest.service.NoticeService;
 
-@Service("innoNoticeService")
-public class InnoNoticeServiceImpl implements InnoNoticeSerice {
+@Service("NoticeService")
+public class NoticeServiceImpl implements NoticeService {
     
     @Autowired
-    private InnoNoticeMapper mapper;
+    private NoticeMapper mapper;
     
     @Override
-    public List<Map<String, Object>> innoNoticeList(){
-        return mapper.innoNoticeList();
+    public List<Map<String, Object>> noticeList(){
+        return mapper.noticeList();
     };
 
     @Override

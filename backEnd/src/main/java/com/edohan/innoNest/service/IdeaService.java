@@ -1,9 +1,10 @@
-package com.edohan.innoNest.mapper;
+package com.edohan.innoNest.service;
 
 import java.util.*;
 
-public interface InnoIdeaMapper {
-    List<Map<String, Object>> innoIdeaList();
+public interface IdeaService {
+    List<Map<String, Object>> ideaList();
+    List<Map<String, Object>> myIdeaList(String userId);
     Map<String, Object> getIdeaDetail(int id);
     void saveIdea(String userId, String title, String content, String tags, String category);
     void updateIdea(int id, String title, String content);
@@ -12,5 +13,4 @@ public interface InnoIdeaMapper {
 
     void addReaction(String userId, int ideaId, String reactionType);
     void removeReaction(String userId, int ideaId, String reactionType);
-    Map<String, Integer> getReactionCounts(int ideaId);
 }

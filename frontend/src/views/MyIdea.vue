@@ -40,7 +40,6 @@
   </section>
 </template>
 
-
 <script>
 import axios from 'axios';
 
@@ -50,7 +49,7 @@ export default {
     return {
       ideas: [],        // 전체 아이디어 리스트
       currentPage: 1,   // 현재 페이지
-      pageSize: 6      // 페이지당 아이디어 개수
+      pageSize: 6       // 페이지당 아이디어 개수
     };
   },
   computed: {
@@ -70,18 +69,19 @@ export default {
       return pages;
     }
   },
-  created() {
-    this.fetchIdeaList();
-  },
   methods: {
-    fetchIdeaList() {
-      axios.get('api/idea/list')
-        .then(response => {
-          this.ideas = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching idea list:', error);
+    async fetchIdeaList() {
+      const userId = this.$store.getters.user?.id;
+      try {
+        const response = await axios.get(`/api/idea/myList`, {
+          headers: {
+            'User-Id': userId,
+          },
         });
+        this.ideas = response.data;
+      } catch (error) {
+        console.error('아이디어 세부 정보를 가져오는 중 오류 발생:', error);
+      }
     },
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -95,10 +95,12 @@ export default {
     parseTags(tagsString) {
       return tagsString.split(',').map(tag => tag.trim());
     }
+  },
+  created() {
+    this.fetchIdeaList();
   }
 };
 </script>
-
 
 <style scoped>
 /* Existing styles */

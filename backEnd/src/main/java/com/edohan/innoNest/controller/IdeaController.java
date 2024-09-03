@@ -1,24 +1,27 @@
 package com.edohan.innoNest.controller;
 
 import java.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.edohan.innoNest.service.InnoIdeaSerice;
-
+import com.edohan.innoNest.service.IdeaService;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/idea")
-public class InnoIdeaController {
+public class IdeaController {
     
     @Autowired
-    private InnoIdeaSerice service;
+    private IdeaService service;
 
     @GetMapping("/list")
     public List<Map<String, Object>> ideaList() {
-        return service.innoIdeaList();
+        return service.ideaList();
+    }
+    @GetMapping("/myList")
+    public List<Map<String, Object>> myListideaList(@RequestHeader(value = "User-Id", required = false) String userId) {
+        List<Map<String, Object>>  myListideaList = service.myIdeaList(userId);
+        return myListideaList;
     }
 
     @GetMapping("/detail/{id}")
@@ -26,13 +29,8 @@ public class InnoIdeaController {
         Map<String, Object> ideaDetail = service.getIdeaDetail(id);
     
         if (userId != null && !userId.equals(ideaDetail.get("WRITER"))) {
-            String referrer = request.getHeader("Referer");
-            
-            // 좋아요, 싫어요 요청이 아닌 경우에만 조회수 증가
-            if (!"LIKE".equals(referrer) && !"DISLIKE".equals(referrer)) {
                 service.incViewCount(id);
                 ideaDetail = service.getIdeaDetail(id);  // 조회수 증가 후 다시 데이터를 가져옵니다.
-            }
         }
     
         return ideaDetail;
@@ -65,10 +63,18 @@ public class InnoIdeaController {
 
     // 좋아요/싫어요 추가
     @PostMapping("/reaction/{id}")
-    public void addReaction(@PathVariable("id") int id, @RequestBody Map<String, String> request) {
+    public ResponseEntity<String> addReaction(@PathVariable("id") int id, @RequestBody Map<String, String> request) {
+        Map<String, Object> ideaDetail = service.getIdeaDetail(id);
+    
         String userId = request.get("userId");
         String reactionType = request.get("reactionType"); // "LIKE" or "DISLIKE"
-        service.addReaction(userId, id, reactionType);
+
+        if (userId != null && !userId.isEmpty() && !userId.equals(ideaDetail.get("WRITER"))) {
+            service.addReaction(userId, id, reactionType);
+            return ResponseEntity.ok("Reaction added successfully.");
+        } else {
+            return ResponseEntity.badRequest().body("UserId is required.");
+        }
     }
 
     // 좋아요/싫어요 취소
@@ -76,12 +82,8 @@ public class InnoIdeaController {
     public void removeReaction(@PathVariable("id") int id, @RequestBody Map<String, String> request) {
         String userId = request.get("userId");
         String reactionType = request.get("reactionType"); // "LIKE" or "DISLIKE"
+        
         service.removeReaction(userId, id, reactionType);
     }
 
-    @GetMapping("/reaction/count/{id}")
-    public Map<String, Integer> getReactionCounts(@PathVariable("id") int id) {
-        System.out.println(" /reaction/count/{id}  id :  "+id);
-        return service.getReactionCounts(id);
-    }
 }

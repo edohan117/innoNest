@@ -15,12 +15,6 @@
           <li><a href="/support">고객 지원</a></li>
         </ul>
       </div>
-      <div class="footer-section contact">
-        <h3>문의하기</h3>
-        <p><i class="bi bi-envelope"></i> info@innonest.com</p>
-        <p><i class="bi bi-telephone"></i> 02-1234-5678</p>
-        <p><i class="bi bi-geo-alt"></i> 서울시 강남구 테헤란로 123</p>
-      </div>
       <div class="footer-section social">
         <h3>소셜 미디어</h3>
         <div class="social-icons">

@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.edohan.innoNest.service.MainSerice;
+import com.edohan.innoNest.service.MainService;
 
 @RestController
 @RequestMapping("/api/main")
 public class MainController {
     
     @Autowired
-    private MainSerice service;
+    private MainService service;
 
     @GetMapping("/list")
     public Map<String, Object> list() {

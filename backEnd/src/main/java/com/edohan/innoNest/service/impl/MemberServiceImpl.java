@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.edohan.innoNest.mapper.MemberMapper;
 import com.edohan.innoNest.service.MemberService;
 
-@Service("memberService")
+@Service("MemberService")
 public class MemberServiceImpl implements MemberService {
     
     @Autowired

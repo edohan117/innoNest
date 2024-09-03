@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.edohan.innoNest.service.InnoNoticeSerice;
+import com.edohan.innoNest.service.NoticeService;
 
 @RestController
 @RequestMapping("/api/notice")
-public class InnoNoticeController {
+public class NoticeController {
     
     @Autowired
-    private InnoNoticeSerice service;
+    private NoticeService service;
 
     @GetMapping("/list")
     public List<Map<String, Object>> noticeList() {
-        return service.innoNoticeList();
+        return service.noticeList();
     }
 
     @GetMapping("/detail/{id}")

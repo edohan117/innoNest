@@ -72,57 +72,17 @@ export default {
       try {
         const response = await axios.get(`/api/idea/detail/${ideaId}`, {
           headers: {
-            'User-Id': userId
+            'User-Id': userId,
+          },
+          params: {
+            isReaction: false // 일반 조회 시 조회수 증가
           }
         });
         idea.value = response.data;
-        fetchUserReaction();
+
       } catch (error) {
-        console.error('아이디어 세부정보를 가져오는 중 오류 발생:', error);
+        console.error('아이디어 세부 정보를 가져오는 중 오류 발생:', error);
       }
-    };
-
-    const fetchUserReaction = async () => {
-      const ideaId = route.params.id;
-      const userId = user.value?.id;
-      if (userId) {
-        try {
-          const response = await axios.get(`/api/idea/reaction/count/${ideaId}`, {
-            headers: {
-              'User-Id': userId
-            }
-          });
-          userReaction.value = response.data.reactionType;
-        } catch (error) {
-          console.error('사용자 반응을 가져오는 중 오류 발생:', error);
-        }
-      }
-    };
-
-    const formatDate = (dateString) => {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    };
-
-    const goToEditPage = () => {
-      router.push({ name: 'IdeaEdit', params: { id: route.params.id } });
-    };
-
-    const deleteIdea = async () => {
-      const ideaId = route.params.id;
-      if (confirm('정말로 이 아이디어를 삭제하시겠습니까?')) {
-        try {
-          await axios.delete(`/api/idea/delete/${ideaId}`);
-          alert('아이디어가 삭제되었습니다.');
-          router.push({ name: 'IdeaList' });
-        } catch (error) {
-          console.error('아이디어를 삭제하는 중 오류 발생:', error);
-        }
-      }
-    };
-
-    const parseTags = (tagsString) => {
-      return tagsString ? tagsString.split(',').map(tag => tag.trim()) : [];
     };
 
     const toggleLike = async () => {
@@ -133,20 +93,22 @@ export default {
           await axios.delete(`/api/idea/reaction/${ideaId}`, {
             data: {
               userId,
-              reactionType: 'LIKE'
+              reactionType: 'LIKE',
+              isReaction: true // 반응(좋아요/싫어요) 요청임을 나타냄
             }
           });
           userReaction.value = null;
         } else {
           await axios.post(`/api/idea/reaction/${ideaId}`, {
             userId,
-            reactionType: 'LIKE'
+            reactionType: 'LIKE',
+            isReaction: true // 반응(좋아요/싫어요) 요청임을 나타냄
           });
           userReaction.value = 'LIKE';
         }
-        fetchIdeaDetail(); // 새로고침하여 반영
+        fetchIdeaDetail(); // 변경 사항을 반영하기 위해 다시 로드
       } catch (error) {
-        console.error('아이디어를 좋아요 하는 중 오류 발생:', error);
+        console.error('좋아요 토글 중 오류 발생:', error);
       }
     };
 
@@ -158,76 +120,86 @@ export default {
           await axios.delete(`/api/idea/reaction/${ideaId}`, {
             data: {
               userId,
-              reactionType: 'DISLIKE'
+              reactionType: 'DISLIKE',
+              isReaction: true // 반응(좋아요/싫어요) 요청임을 나타냄
             }
           });
           userReaction.value = null;
         } else {
           await axios.post(`/api/idea/reaction/${ideaId}`, {
             userId,
-            reactionType: 'DISLIKE'
+            reactionType: 'DISLIKE',
+            isReaction: true // 반응(좋아요/싫어요) 요청임을 나타냄
           });
           userReaction.value = 'DISLIKE';
         }
-        fetchIdeaDetail(); // 새로고침하여 반영
+        fetchIdeaDetail(); // 변경 사항을 반영하기 위해 다시 로드
       } catch (error) {
-        console.error('아이디어를 싫어요 하는 중 오류 발생:', error);
+        console.error('싫어요 토글 중 오류 발생:', error);
+      }
+    };
+
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleDateString();
+    };
+
+    const parseTags = (tagsString) => {
+      return tagsString ? tagsString.split(',').map(tag => tag.trim()) : [];
+    };
+
+    const goToEditPage = () => {
+      router.push(`/ideaUpdate/${route.params.id}`);
+    };
+
+    const deleteIdea = async () => {
+      const ideaId = route.params.id;
+      try {
+        await axios.delete(`/api/idea/delete/${ideaId}`);
+        router.push('/ideaList');
+      } catch (error) {
+        console.error('아이디어 삭제 중 오류 발생:', error);
       }
     };
 
     const canEditOrDelete = computed(() => {
-      if (!user.value || !user.value.id || !role.value) {
-        return false;
-      }
-      return idea.value.WRITER === user.value.id || role.value === 'ADMIN';
+      return role.value === 'ADMIN' || user.value?.id === idea.value.WRITER;
     });
 
     onMounted(() => {
-      fetchIdeaDetail(); // 컴포넌트가 마운트될 때 아이디어 세부정보를 가져옴
+      fetchIdeaDetail();
     });
 
     return {
       idea,
       userReaction,
-      formatDate,
-      goToEditPage,
-      deleteIdea,
-      parseTags,
       toggleLike,
       toggleDislike,
-      canEditOrDelete
+      formatDate,
+      parseTags,
+      goToEditPage,
+      deleteIdea,
+      canEditOrDelete,
     };
-  }
+  },
 };
 </script>
 
 <style scoped>
 .idea-detail {
   max-width: 800px;
-  margin: 2rem auto;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .content-container {
-  padding: 2rem;
-}
-
-h2 {
-  font-size: 2.2rem;
-  color: #2c3e50;
-  margin-bottom: 1rem;
-  font-weight: 700;
+  margin-bottom: 20px;
 }
 
 .meta-info {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-  color: #7f8c8d;
+  margin-bottom: 10px;
 }
 
 .author-info,
@@ -238,160 +210,64 @@ h2 {
 
 .author-info i,
 .date-info i {
-  margin-right: 0.5rem;
-  font-size: 1.2rem;
+  margin-right: 5px;
 }
 
 .idea-content {
-  font-size: 1.1rem;
-  color: #34495e;
-  line-height: 1.6;
-  margin-bottom: 2rem;
-}
-
-.idea-content pre {
-  white-space: pre-wrap;
-  font-weight: 700;
-  color: #34495e;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
 .interaction-stats {
   display: flex;
-  justify-content: flex-start;
-  gap: 2rem;
-  margin-bottom: 1.5rem;
+  justify-content: space-around;
+  margin-bottom: 20px;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  font-size: 1rem;
-  color: #7f8c8d;
 }
 
 .stat-item i {
-  margin-right: 0.5rem;
-  font-size: 1.2rem;
+  margin-right: 5px;
 }
 
-.idea-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.tag {
-  background-color: #3498db;
-  color: #ffffff;
-  border-radius: 12px;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.8rem;
-  white-space: nowrap;
-  font-weight: 500;
-}
-
-.tag:hover {
-  background-color: #2980b9;
-}
-
-.action-buttons {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  background-color: #f8f9fa;
-  border-top: 1px solid #e9ecef;
-}
-
-.btn {
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
-}
-
-.btn-secondary {
-  background-color: #6c757d;
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  color: #ffffff;
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  color: #ffffff;
-}
-
-.btn:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
-}
-
-.edit-delete-buttons {
-  display: flex;
-  gap: 1rem;
+.stat-item span {
+  margin-right: 10px;
 }
 
 .btn-icon {
-  display: flex;
-  align-items: center;
-  background: none;
   border: none;
-  font-size: 1rem;
-  color: #7f8c8d;
+  background: none;
   cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.btn-icon:hover {
-  color: #007bff;
-}
-
-.btn-icon i {
-  margin-right: 0.5rem;
-  font-size: 1.2rem;
-}
-
-.btn-icon.active {
-  color: #007bff;
 }
 
 .btn-icon.active i {
   color: #007bff;
 }
 
-@media (max-width: 600px) {
-  .idea-detail {
-    margin: 1rem;
-  }
+.idea-tags {
+  margin-bottom: 20px;
+}
 
-  .content-container {
-    padding: 1.5rem;
-  }
+.tag {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 5px;
+}
 
-  h2 {
-    font-size: 1.8rem;
-  }
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
 
-  .interaction-stats {
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .btn {
-    width: 100%;
-  }
+.edit-delete-buttons button {
+  margin-left: 10px;
 }
 </style>
